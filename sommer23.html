@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinAlg Prüfung - Sommer 2023</title>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --success-bg: #e8f8f0;
+            --error-color: #e74c3c;
+            --error-bg: #fdedec;
+            --background-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .navigation-bar {
+            text-align: center;
+            margin-bottom: 25px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .exam-select {
+            padding: 10px 15px;
+            font-size: 1.05rem;
+            border-radius: 6px;
+            border: 2px solid var(--primary-color);
+            background-color: white;
+            color: var(--text-color);
+            cursor: pointer;
+            font-weight: 600;
+            outline: none;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background-color: var(--background-color);
+            padding: 10px 0 20px 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .progress-container {
+            background-color: #dcdde1;
+            border-radius: 10px;
+            height: 18px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            background-color: var(--success-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+
+        .question-header {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #34495e;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f1f2f6;
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+        }
+
+        .options-list {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .options-list li {
+            margin-bottom: 12px;
+        }
+
+        .options-list label {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .options-list label:hover {
+            background-color: #f1f2f6;
+            border-color: #b2bec3;
+        }
+
+        .options-list input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .correct-answer {
+            background-color: var(--success-bg) !important;
+            border-color: var(--success-color) !important;
+            color: #1e7e34 !important;
+            font-weight: 600;
+        }
+
+        .wrong-answer {
+            background-color: var(--error-bg) !important;
+            border-color: var(--error-color) !important;
+            color: #bd2130 !important;
+            font-weight: 600;
+        }
+
+        .btn-check {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-check:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-check:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .explanation-box {
+            display: none;
+            margin-top: 20px;
+            padding: 15px 20px;
+            background-color: #eaf2f8;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 4px;
+            font-size: 0.98rem;
+        }
+
+        .explanation-title {
+            font-weight: 700;
+            color: #2980b9;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="navigation-bar">
+        <label for="exam-selector" style="font-weight: bold; margin-right: 10px;">Prüfung wechseln:</label>
+        <select id="exam-selector" class="exam-select" onchange="window.location.href=this.value">
+            <option value="sommer23.html" selected>Sommer 2023</option>
+        </select>
+    </div>
+
+    <h1>Lineare Algebra I/II</h1>
+    <div class="subtitle">Prüfung Sommer 2023 (16.08.2023) - Multiple Choice</div>
+    
+    <div class="sticky-header">
+        <div class="progress-container">
+            <div class="progress-bar" id="global-progress"></div>
+        </div>
+        <div class="progress-text">
+            <span id="checked-counter">0 von X Fragen gelöst</span>
+            <span id="correct-counter" style="color: var(--success-color);">Richtig: 0 (0%)</span>
+        </div>
+    </div>
+
+    <div id="quiz-container"></div>
+</div>
+
+<script>
+    const quizQuestions = [
+        {
+            id: 1,
+            question: "Welche der folgenden Matrizen ist die Inverse von $A = \\frac{1}{2}\\begin{pmatrix}1&1&0\\\\ 3&1&3\\\\ 1&5&1\\end{pmatrix} \\in \\mathbb{R}^{3\\times3}$?",
+            options: [
+                "$\\begin{pmatrix}0&1&-3/7\\\\ 0&-1/7&3/7\\\\ -2&4/7&7\\end{pmatrix}$",
+                "$\\begin{pmatrix}2&1/7&-3/7\\\\ 0&-1/7&3/7\\\\ -2&4/7&2/7\\end{pmatrix}$",
+                "$\\begin{pmatrix}2&3/7&-1/7\\\\ 0&-1/7&3/7\\\\ -2&8/7&2/7\\end{pmatrix}$",
+                "$\\begin{pmatrix}2&-1/7&-3\\\\ 0&1/7&3\\\\ -2&4/7&2\\end{pmatrix}$"
+            ],
+            correct: 1,
+            explanation: "Die korrekte Lösung ist B. Entweder Ausschlussverfahren, indem man einige Einträge des Produktes von A mit den vorgeschlagenen Matrizen berechnet (es muss die Einheitsmatrix ergeben), oder das Gauss-Jordan-Verfahren auf A anwenden."
+        },
+        {
+            id: 2,
+            question: "Bestimmen Sie, welche der folgenden Mengen ein Unterraum eines Vektorraums ist.",
+            options: [
+                "Die Menge der Polynome $p$ mit einem Grad $\\le 3$, so dass $p(2) = 0$.",
+                "Die Menge der Vektoren $\\{(x, y, z)^T \\in \\mathbb{R}^3 : xyz = 0\\}$.",
+                "Die Menge $\\{A \\in \\mathbb{R}^{2\\times2} : \\det A = 0\\}$.",
+                "Die Menge $\\{(x - y, x + y + 2, 2x - 3y)^T : x, y \\in \\mathbb{R}\\}$."
+            ],
+            correct: 0,
+            explanation: "Die korrekte Lösung ist A: Die Menge ist abgeschlossen unter Addition und unter Multiplikation mit Skalaren.<br><br>B ist nicht abgeschlossen unter Addition (z. B. $e_1$ und $e_2+e_3$ gehören dazu, ihre Summe aber nicht).<br>C ist nicht abgeschlossen unter Addition (die Summe zweier singulärer Matrizen kann regulär sein).<br>D enthält nicht den Nullvektor."
+        },
+        {
+            id: 3,
+            question: "Für welchen Wert von a besitzt das folgende lineare Gleichungssystem eine Lösung?<br><br> $x + y = 0$<br>$x - 2y = -1$<br>$2x + y = a$",
+            options: [
+                "$a = 1/2$",
+                "$a = 1/3$",
+                "$a = -1/3$",
+                "$a = 1$"
+            ],
+            correct: 2,
+            explanation: "Die korrekte Lösung lautet $a = -1/3$. Das Gauss-Verfahren liefert als Verträglichkeitsbedingung in der letzten Zeile $0 = -1 - 3a$. Aufgelöst nach $a$ ergibt das $-1/3$. <i>(Hinweis: In der Originalprüfung steht 'Die korrekte Lösung ist A', aber die Rechnung ergibt $-1/3$, was der Option C entspricht.)</i>"
+        },
+        {
+            id: 4,
+            question: "Sei $A \\in \\mathbb{R}^{n\\times n}$ eine Matrix. Dann gilt...",
+            options: [
+                "Wenn A invertierbar ist und $A^{-1} = A^T$, dann ist $\\det A = \\pm 1$.",
+                "Wenn $A^T = -A$, dann ist $\\det A = -1$.",
+                "Wenn $A^3 = 3A$, dann ist $\\det A = 3^n$.",
+                "$\\det(-A) = \\det A$."
+            ],
+            correct: 0,
+            explanation: "Die korrekte Lösung ist A: Es gilt nämlich $1 = \\det(I) = \\det(AA^T) = \\det A \\cdot \\det(A^T) = (\\det A)^2$. Daraus folgt $\\det A = \\pm 1$. Die anderen Optionen gelten im Allgemeinen nicht (beachte z.B., dass $\\det(-A) = (-1)^n \\det A$)."
+        },
+        {
+            id: 5,
+            question: "Gegeben sei das folgende homogene lineare Differentialgleichungssystem für $\\begin{pmatrix}x_1(t)\\\\x_2(t)\\end{pmatrix}$:<br><br> $x'_1 = 5x_1 - 3x_2$<br>$x'_2 = 2x_1$<br><br>Welche Vektoren spannen den Lösungsraum auf?",
+            options: [
+                "$\\begin{pmatrix}e^{2t}\\\\e^{2t}\\end{pmatrix}$",
+                "$\\begin{pmatrix}2e^{2t}\\\\e^{2t}\\end{pmatrix}, \\begin{pmatrix}e^{3t}\\\\e^{3t}\\end{pmatrix}$",
+                "$\\begin{pmatrix}3e^{3t}\\\\2e^{3t}\\end{pmatrix}$",
+                "$\\begin{pmatrix}e^{2t}\\\\e^{2t}\\end{pmatrix}, \\begin{pmatrix}3e^{3t}\\\\2e^{3t}\\end{pmatrix}$"
+            ],
+            correct: 3,
+            explanation: "Die korrekte Lösung ist D: Die Funktionen in B sind keine Lösungen. Die Funktionen in A und C sind zwar Lösungen, spannen aber einzeln den Lösungsraum (der 2-dimensional ist) nicht vollständig auf."
+        },
+        {
+            id: 6,
+            question: "Die quadratische Form $x_1^2 + x_2^2 + x_1x_2$ ist",
+            options: [
+                "positiv definit",
+                "negativ definit",
+                "indefinit",
+                "positiv semidefinit"
+            ],
+            correct: 0,
+            explanation: "Die korrekte Lösung ist A: Die zugehörige Matrix $A = \\frac{1}{2} \\begin{pmatrix}2 & 1\\\\ 1 & 2\\end{pmatrix}$ ist positiv definit (nach Hurwitz-Kriterium). Alternativ durch quadratische Ergänzung: $\\frac{1}{2}(x_1^2 + x_2^2 + (x_1+x_2)^2) > 0$ für alle $x \\neq 0$."
+        },
+        {
+            id: 7,
+            question: "Es sei $A = \\begin{pmatrix}1 & 0 & 0\\\\ 0 & 0 & 1\\\\ 0 & 1 & 0\\end{pmatrix}$ und $F_A: \\mathbb{R}^3 \\rightarrow \\mathbb{R}^3$ die Abbildung $x \\mapsto Ax$. Welche Aussage ist richtig?",
+            options: [
+                "Die Abbildung $F_A$ beschreibt eine Translation.",
+                "Die Abbildung $F_A$ beschreibt eine Spiegelung.",
+                "Die Abbildung $F_A$ beschreibt eine Drehung um die $x_1$-Achse um 90°.",
+                "Die Abbildung $F_A$ beschreibt eine Drehung um die $x_1$-Achse um 180°."
+            ],
+            correct: 1,
+            explanation: "Die korrekte Lösung ist B: Der Punkt mit Koordinaten $(x_1, x_2, x_3)$ wird abgebildet auf $(x_1, x_3, x_2)$. Die $x_1$-Koordinate bleibt gleich, $x_2$ und $x_3$ werden vertauscht. Dies entspricht einer Spiegelung an der Winkelhalbierenden-Ebene $x_2 = x_3$."
+        },
+        {
+            id: 8,
+            question: "Sei $A = \\begin{pmatrix}1 & 0 & 1\\\\ 2 & 2 & -2\\\\ 1 & 0 & 1\\end{pmatrix} \\in \\mathbb{R}^{3\\times3}$. Was sind die Eigenwerte von $A^T$?",
+            options: [
+                "2, 8, 0",
+                "2, 0",
+                "2, 1, 0",
+                "1, 0"
+            ],
+            correct: 1,
+            explanation: "Die korrekte Lösung ist B: Die Eigenwerte von $A^T$ und von $A$ stimmen stets überein. Entwickelt man die Determinante von $A - \\lambda I$ nach der zweiten Spalte, erhält man als charakteristisches Polynom $\\lambda^2(2 - \\lambda) = 0$. Die Eigenwerte sind somit 0 und 2 (wobei 0 die Vielfachheit 2 hat)."
+        },
+        {
+            id: 9,
+            question: "Betrachten Sie die lineare Abbildung $f : \\mathbb{R}^3 \\rightarrow \\mathbb{R}^3, f(x, y, z)^T = (y, x + 2z, x - y + 2z)^T$. Die zugehörige Darstellungsmatrix bezüglich der Standardbasis lautet:",
+            options: [
+                "$\\begin{pmatrix}0&1&0\\\\ 1&0&2\\\\ 1&-1&2\\end{pmatrix}$",
+                "$\\begin{pmatrix}0&1&1\\\\ 1&0&-1\\\\ 0&2&2\\end{pmatrix}$",
+                "$\\begin{pmatrix}1&0&0\\\\ 1&2&0\\\\ 1&-1&2\\end{pmatrix}$",
+                "$\\begin{pmatrix}y&0&0\\\\ 0&x+2z&0\\\\ 0&0&x-y+2z\\end{pmatrix}$"
+            ],
+            correct: 0,
+            explanation: "Die korrekte Lösung ist A: Die Spalten der Darstellungsmatrix sind die Bilder der Standardbasisvektoren. $f(e_1) = (0, 1, 1)^T$, $f(e_2) = (1, 0, -1)^T$ und $f(e_3) = (0, 2, 2)^T$. Aneinandergereiht ergibt dies exakt Matrix A."
+        },
+        {
+            id: 10,
+            question: "Seien $A \\in \\mathbb{R}^{3\\times4}$, $B \\in \\mathbb{R}^{3\\times3}$, $C \\in \\mathbb{R}^{4\\times3}$. Welcher der folgenden Ausdrücke ist sinnvoll?",
+            options: [
+                "$AB$",
+                "$A^2$",
+                "$A + C$",
+                "$A + C^T$"
+            ],
+            correct: 3,
+            explanation: "Die korrekte Lösung ist D: $C$ ist eine $4 \\times 3$ Matrix, folglich ist die Transponierte $C^T$ eine $3 \\times 4$ Matrix. Diese hat exakt dieselben Dimensionen wie $A$, daher ist die Addition $A + C^T$ definiert."
+        },
+        {
+            id: 11,
+            question: "Seien $v_1 = (1, 1, 1)^T, v_2 = (-1, 0, -2)^T$ Vektoren in $\\mathbb{R}^3$. Welcher der folgenden Vektoren $v$ ist bezüglich des Standardskalarprodukts orthogonal zu $v_1$ und zu $v_2$?",
+            options: [
+                "$(0, 1, -1)^T$",
+                "$(-2, 0, 1)^T$",
+                "$(-2, 1, 1)^T$",
+                "$(-2, 1, -1)^T$"
+            ],
+            correct: 2,
+            explanation: "Die korrekte Lösung ist C: Berechnet man das Skalarprodukt von $(-2, 1, 1)^T$ mit den beiden Vektoren, ergibt sich $(-2)(1) + (1)(1) + (1)(1) = 0$ und $(-2)(-1) + (1)(0) + (1)(-2) = 0$. Alternativ kann man das Vektorprodukt $v_1 \\times v_2 = (-2, 1, 1)^T$ berechnen."
+        },
+        {
+            id: 12,
+            question: "Sei $A = \\begin{pmatrix}-2&2&2\\\\ -1&1&1\\\\ -1&1&1\\end{pmatrix} \\in \\mathbb{R}^{3\\times3}$. Welcher der folgenden Vektoren ist <b>kein</b> Eigenvektor der Matrix A?",
+            options: [
+                "$(1, 1, 0)^T$",
+                "$(1, 0, 1)^T$",
+                "$(2, 1, 1)^T$",
+                "$(1, 1, 1)^T$"
+            ],
+            correct: 3,
+            explanation: "Die richtige Lösung ist D: Ein Vektor $v$ ist ein Eigenvektor, wenn $Av = \\lambda v$ gilt. Multipliziert man $A$ mit $(1, 1, 1)^T$, erhält man $(2, 1, 1)^T$. Das ist kein Vielfaches von $(1, 1, 1)^T$. Die Vektoren in A und B ergeben den Nullvektor (Eigenwert 0), Vektor C ergibt den Nullvektor (Eigenwert 0)."
+        },
+        {
+            id: 13,
+            question: "Seien $f, g : \\mathbb{R}^n \\rightarrow \\mathbb{R}^n$ lineare Abbildungen. Welche der folgenden Aussagen gilt im Allgemeinen?",
+            options: [
+                "Wenn f invertierbar ist, dann ist $f^{-1}$ linear.",
+                "$\\ker(g \\circ f) \\subseteq \\ker f$",
+                "Wenn $\\ker f = \\ker g$, dann folgt $\\operatorname{im} f = \\operatorname{im} g$",
+                "$\\operatorname{im} f$ ist orthogonal zu $\\ker f$."
+            ],
+            correct: 0,
+            explanation: "Die korrekte Lösung ist A. Die Umkehrabbildung einer bijektiven linearen Abbildung ist immer ebenfalls linear."
+        },
+        {
+            id: 14,
+            question: "Welchen Wert hat die Determinante $\\det \\begin{pmatrix}1&2&3&4\\\\ 3&4&5&6\\\\ 0&0&1+a&a\\\\ 0&0&-a&1-a\\end{pmatrix}$? (Hinweis: Verwenden Sie den Blocksatz.)",
+            options: [
+                "2",
+                "-2",
+                "$-2a^2$",
+                "$-2(1+2a)$"
+            ],
+            correct: 1,
+            explanation: "Die korrekte Lösung ist B: Mit der Blockmatrizen-Formel für Dreiecksblöcke berechnet sich die Determinante als Produkt der Determinanten der Diagonalblöcke: $\\det\\begin{pmatrix}1&2\\\\3&4\\end{pmatrix} \\cdot \\det\\begin{pmatrix}1+a&a\\\\-a&1-a\\end{pmatrix} = (4-6) \\cdot ((1+a)(1-a) + a^2) = -2 \\cdot (1-a^2+a^2) = -2 \\cdot 1 = -2$."
+        },
+        {
+            id: 15,
+            question: "Welche der folgenden Aussagen gilt allgemein für Matrizen $A, B \\in \\mathbb{R}^{2\\times2}$?",
+            options: [
+                "Wenn $AB = 0$, dann gilt $\\det A = \\det B = 0$.",
+                "Wenn $A^2 = 0$, dann ist $(I + A)^{-1} = I - A$.",
+                "Wenn $A = (A^{-1})^T$, dann gilt $\\det A = 1$.",
+                "Wenn $\\det A = 0$, dann ist $A^2$ die Nullmatrix."
+            ],
+            correct: 1,
+            explanation: "Die korrekte Lösung ist B: Es gilt $(I+A)(I-A) = I^2 - IA + AI - A^2 = I - A^2$. Wenn $A^2 = 0$, ergibt das exakt $I$. Somit sind $(I+A)$ und $(I-A)$ zueinander invers."
+        },
+        {
+            id: 16,
+            question: "Sei $f : \\mathbb{R}^3 \\rightarrow \\mathbb{R}^4$ eine Abbildung $f(x) = Ax$, wobei $A = \\begin{pmatrix}1&2&3\\\\ 0&1&0\\\\ 4&5&6\\\\ 0&2&0\\end{pmatrix}$. Dann ist die Dimension des Bilds von $f$ gleich...",
+            options: [
+                "1",
+                "2",
+                "3",
+                "4"
+            ],
+            correct: 2,
+            explanation: "Die korrekte Lösung ist C: Die Dimension des Bildes entspricht dem Rang der Matrix. Streicht man z.B. die vierte Zeile, bleibt eine $3\\times3$ Matrix, deren Determinante ungleich 0 ist. Somit sind die drei Spalten linear unabhängig und der Rang ist 3."
+        },
+        {
+            id: 17,
+            question: "Neben der Standardbasis $E$ in $\\mathbb{R}^2$ sei noch die Basis $B = \\{(2, 0)^T, (3, 4)^T\\}$ gegeben. Für welche Matrix $M$ gilt $M[v]_E = [v]_B$ für alle Vektoren $v \\in \\mathbb{R}^2$?",
+            options: [
+                "$\\begin{pmatrix}2&3\\\\ 0&4\\end{pmatrix}$",
+                "$\\begin{pmatrix}1/2&-3/8\\\\ 0&1/4\\end{pmatrix}$",
+                "$\\begin{pmatrix}1/2&0\\\\ -3/8&1/4\\end{pmatrix}$",
+                "$\\begin{pmatrix}2&0\\\\ 3&4\\end{pmatrix}$"
+            ],
+            correct: 1,
+            explanation: "Die korrekte Lösung ist B: Gesucht ist die Übergangsmatrix von der Standardbasis E in die Basis B. Die Basisvektoren von B in den Spalten $\\begin{pmatrix}2&3\\\\0&4\\end{pmatrix}$ ergeben die Übergangsmatrix von B nach E. Wir suchen die Inverse davon, welche exakt Option B ist."
+        },
+        {
+            id: 18,
+            question: "Welche der folgenden Aussagen gilt allgemein für reguläre Matrizen $A, B \\in \\mathbb{R}^{n\\times n}$?",
+            options: [
+                "$((AB)^{-1})^T = (B^{-1})^T (A^{-1})^T$",
+                "$((AB)^{-1})^T = ((BA)^T)^{-1}$",
+                "$((AB)^{-1})^T = B^{-1} A^T A^{-1} B^T$",
+                "$((AB)^{-1})^T = (A^{-1})^T (B^{-1})^T$"
+            ],
+            correct: 3,
+            explanation: "Die korrekte Lösung ist D: Nach den Rechenregeln für Matrizen gilt $(AB)^{-1} = B^{-1} A^{-1}$. Wendet man darauf die Transposition an, dreht sich die Reihenfolge erneut um: $(B^{-1} A^{-1})^T = (A^{-1})^T (B^{-1})^T$."
+        },
+        {
+            id: 19,
+            question: "Welche der folgenden Aussagen gilt allgemein <b>nicht</b> für eine Matrix $A \\in \\mathbb{R}^{2\\times2}$?",
+            options: [
+                "Wenn A invertierbar ist, dann ist jeder Eigenwert von A ungleich Null.",
+                "Wenn A diagonalisierbar ist, dann ist $A^2$ auch diagonalisierbar.",
+                "Wenn A invertierbar und diagonalisierbar ist, dann ist $A^{-1}$ diagonalisierbar.",
+                "Wenn A einen Eigenwert ungleich Null hat, dann ist A invertierbar."
+            ],
+            correct: 3,
+            explanation: "Die korrekte Lösung ist D: Diese Aussage ist falsch (und somit die gesuchte Lösung). Eine Matrix kann einen Eigenwert $\\neq 0$ haben, aber gleichzeitig auch den Eigenwert 0 besitzen. Sobald ein Eigenwert 0 ist, ist die Determinante 0 und die Matrix nicht invertierbar."
+        },
+        {
+            id: 20,
+            question: "Sei $V$ der reelle Vektorraum mit Basis $B = \\{e^x, e^{3x}\\}$. Was ist die Abbildungsmatrix $[g]_B$ der Abbildung $g : V \\rightarrow V, y(x) \\mapsto y''(x) + 4y'(x) - 5y(x)$?",
+            options: [
+                "$\\begin{pmatrix}0&0\\\\ 0&16\\end{pmatrix}$",
+                "$\\begin{pmatrix}0&16\\\\ 0&0\\end{pmatrix}$",
+                "$\\begin{pmatrix}0&0\\\\ 0&12\\end{pmatrix}$",
+                "$\\begin{pmatrix}0&0\\\\ 16&16\\end{pmatrix}$"
+            ],
+            correct: 0,
+            explanation: "Die korrekte Lösung ist A: Wir setzen die Basisvektoren ein: $g(e^x) = e^x + 4e^x - 5e^x = 0 = 0\\cdot e^x + 0\\cdot e^{3x}$. Das gibt die erste Spalte $(0, 0)^T$. Für den zweiten Basisvektor: $g(e^{3x}) = 9e^{3x} + 12e^{3x} - 5e^{3x} = 16e^{3x} = 0\\cdot e^x + 16\\cdot e^{3x}$. Das ergibt die zweite Spalte $(0, 16)^T$."
+        }
+    ];
+
+    let totalQuestions = quizQuestions.length;
+    let checkedCount = 0;
+    let correctCount = 0;
+
+    const container = document.getElementById('quiz-container');
+
+    document.getElementById('checked-counter').innerText = `0 von ${totalQuestions} Fragen gelöst`;
+
+    quizQuestions.forEach((q, index) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `card-${q.id}`;
+
+        let optionsHtml = '';
+        q.options.forEach((opt, optIndex) => {
+            optionsHtml += `
+                <li>
+                    <label id="label-${q.id}-${optIndex}">
+                        <input type="radio" name="q${q.id}" value="${optIndex}">
+                        <span>${opt}</span>
+                    </label>
+                </li>
+            `;
+        });
+
+        card.innerHTML = `
+            <div class="question-header">Aufgabe 1.MC${index + 1}</div>
+            <div class="question-text">${q.question}</div>
+            <ul class="options-list">
+                ${optionsHtml}
+            </ul>
+            <button type="button" class="btn-check" id="btn-${q.id}" onclick="validateQuestion(${q.id})">Frage prüfen</button>
+            <div class="explanation-box" id="expl-${q.id}">
+                <div class="explanation-title">Erklärung:</div>
+                <div id="expl-text-${q.id}">${q.explanation}</div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    function validateQuestion(qId) {
+        const selectedRadio = document.querySelector(`input[name="q${qId}"]:checked`);
+        
+        if (!selectedRadio) {
+            alert("Bitte wähle zuerst eine Antwort aus!");
+            return;
+        }
+
+        const checkedBtn = document.getElementById(`btn-${qId}`);
+        checkedBtn.disabled = true;
+        checkedBtn.innerText = "Überprüft";
+
+        const radios = document.querySelectorAll(`input[name="q${qId}"]`);
+        radios.forEach(r => r.disabled = true);
+
+        const qData = quizQuestions.find(q => q.id === qId);
+        const selectedValue = parseInt(selectedRadio.value);
+        const correctValue = qData.correct;
+
+        if (selectedValue === correctValue) {
+            document.getElementById(`label-${qId}-${selectedValue}`).classList.add('correct-answer');
+            correctCount++;
+        } else {
+            document.getElementById(`label-${qId}-${selectedValue}`).classList.add('wrong-answer');
+            document.getElementById(`label-${qId}-${correctValue}`).classList.add('correct-answer');
+        }
+
+        document.getElementById(`expl-${qId}`).style.display = 'block';
+
+        checkedCount++;
+        updateGlobalProgress();
+        
+        if (window.MathJax) {
+            MathJax.typesetPromise([document.getElementById(`expl-${qId}`)]);
+        }
+    }
+
+    function updateGlobalProgress() {
+        const percent = (checkedCount / totalQuestions) * 100;
+        document.getElementById('global-progress').style.width = `${percent}%`;
+        document.getElementById('checked-counter').innerText = `${checkedCount} von ${totalQuestions} Fragen gelöst`;
+        
+        const successPercent = checkedCount > 0 ? Math.round((correctCount / checkedCount) * 100) : 0;
+        document.getElementById('correct-counter').innerText = `Richtig: ${correctCount} (${successPercent}%)`;
+    }
+</script>
+
+</body>
+</html>
