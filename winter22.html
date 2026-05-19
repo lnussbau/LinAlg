@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinAlg Prüfung - Winter 2022</title>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --success-bg: #e8f8f0;
+            --error-color: #e74c3c;
+            --error-bg: #fdedec;
+            --background-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .navigation-bar {
+            text-align: center;
+            margin-bottom: 25px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .exam-select {
+            padding: 10px 15px;
+            font-size: 1.05rem;
+            border-radius: 6px;
+            border: 2px solid var(--primary-color);
+            background-color: white;
+            color: var(--text-color);
+            cursor: pointer;
+            font-weight: 600;
+            outline: none;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background-color: var(--background-color);
+            padding: 10px 0 20px 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .progress-container {
+            background-color: #dcdde1;
+            border-radius: 10px;
+            height: 18px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            background-color: var(--success-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+
+        .question-header {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #34495e;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f1f2f6;
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+        }
+
+        .options-list {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .options-list li {
+            margin-bottom: 12px;
+        }
+
+        .options-list label {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .options-list label:hover {
+            background-color: #f1f2f6;
+            border-color: #b2bec3;
+        }
+
+        .options-list input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .correct-answer {
+            background-color: var(--success-bg) !important;
+            border-color: var(--success-color) !important;
+            color: #1e7e34 !important;
+            font-weight: 600;
+        }
+
+        .wrong-answer {
+            background-color: var(--error-bg) !important;
+            border-color: var(--error-color) !important;
+            color: #bd2130 !important;
+            font-weight: 600;
+        }
+
+        .btn-check {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-check:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-check:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .explanation-box {
+            display: none;
+            margin-top: 20px;
+            padding: 15px 20px;
+            background-color: #eaf2f8;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 4px;
+            font-size: 0.98rem;
+        }
+
+        .explanation-title {
+            font-weight: 700;
+            color: #2980b9;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="navigation-bar">
+        <label for="exam-selector" style="font-weight: bold; margin-right: 10px;">Prüfung wechseln:</label>
+        <select id="exam-selector" class="exam-select" onchange="window.location.href=this.value">
+            <option value="sommer23.html">Sommer 2023</option>
+            <option value="winter22.html" selected>Winter 2022</option>
+        </select>
+    </div>
+
+    <h1>Lineare Algebra I/II</h1>
+    <div class="subtitle">Prüfung Winter 2022 - Multiple Choice</div>
+    
+    <div class="sticky-header">
+        <div class="progress-container">
+            <div class="progress-bar" id="global-progress"></div>
+        </div>
+        <div class="progress-text">
+            <span id="checked-counter">0 von 20 Fragen gelöst</span>
+            <span id="correct-counter" style="color: var(--success-color);">Richtig: 0 (0%)</span>
+        </div>
+    </div>
+
+    <div id="quiz-container"></div>
+</div>
+
+<script>
+    const quizQuestions = [
+        {
+            id: 1,
+            question: "Welcher der folgenden Vektoren ist ein Eigenvektor der Matrix $\\begin{pmatrix}1&6&2\\\\ 1&2&1\\\\ 1&4&3\\end{pmatrix}$?",
+            options: [
+                "$\\begin{pmatrix}2\\\\ 1\\\\ 3\\end{pmatrix}$",
+                "$\\begin{pmatrix}8\\\\ -3\\\\ 1\\end{pmatrix}$",
+                "$\\begin{pmatrix}-2\\\\ -2\\\\ 3\\end{pmatrix}$",
+                "$\\begin{pmatrix}2\\\\ -1\\\\ 3\\end{pmatrix}$"
+            ],
+            correct: 1,
+            explanation: "Die korrekte Lösung ist (b). Wir berechnen $A \\cdot v$ für den zweiten Vektor: $\\begin{pmatrix}1&6&2\\\\ 1&2&1\\\\ 1&4&3\\end{pmatrix} \\cdot \\begin{pmatrix}8\\\\ -3\\\\ 1\\end{pmatrix} = \\begin{pmatrix}-8\\\\ 3\\\\ -1\\end{pmatrix} = -1 \\cdot \\begin{pmatrix}8\\\\ -3\\\\ 1\\end{pmatrix}$. Dies erfüllt die Bedingung $Av = \\lambda v$ mit $\\lambda = -1$."
+        },
+        {
+            id: 2,
+            question: "Welche der folgenden Matrizen ist die Inverse von $\\begin{pmatrix}1&1&0\\\\ 2&3&1\\\\ -1&0&2\\end{pmatrix}$?",
+            options: [
+                "$\\begin{pmatrix}6&-2&1\\\\ -4&3&-1\\\\ 3&-1&1\\end{pmatrix}$",
+                "$\\begin{pmatrix}6&-2&1\\\\ -5&0&-1\\\\ 3&-1&1\\end{pmatrix}$",
+                "$\\begin{pmatrix}6&-2&1\\\\ -5&2&-1\\\\ 3&-1&1\\end{pmatrix}$",
+                "$\\begin{pmatrix}6&-2&1\\\\ 2&5&-3\\\\ 3&-1&1\\end{pmatrix}$"
+            ],
+            correct: 2,
+            explanation: "Die korrekte Lösung ist (c). Wenn man die gegebene Matrix mit der Matrix aus (c) multipliziert, erhält man die Einheitsmatrix $I_3$. Da die Inverse eindeutig ist, muss (c) die Lösung sein."
+        },
+        {
+            id: 3,
+            question: "Gegeben sei der Vektor $v \\in \\mathbb{R}^3$ durch $v := \\begin{pmatrix}6\\\\ 8\\\\ 37\\end{pmatrix}$ bezüglich der Standardbasis $E$. Welche Darstellung besitzt dieser Vektor bezüglich der Basis $B := \\{b_1, b_2, b_3\\}$, wobei $b_1 := \\begin{pmatrix}1\\\\ 2\\\\ 3\\end{pmatrix}$, $b_2 := \\begin{pmatrix}0\\\\ -2\\\\ 5\\end{pmatrix}$ und $b_3 := \\begin{pmatrix}1\\\\ 0\\\\ -1\\end{pmatrix}$?",
+            options: [
+                "$\\begin{pmatrix}7\\\\ 3\\\\ -1\\end{pmatrix}$",
+                "$\\begin{pmatrix}5\\\\ 0\\\\ 1\\end{pmatrix}$",
+                "$\\begin{pmatrix}1\\\\ -3\\\\ 5\\end{pmatrix}$",
+                "$\\begin{pmatrix}37\\\\ 8\\\\ 6\\end{pmatrix}$"
+            ],
+            correct: 0,
+            explanation: "Die korrekte Lösung ist (a). Es gilt $7 \\cdot \\begin{pmatrix}1\\\\ 2\\\\ 3\\end{pmatrix} + 3 \\cdot \\begin{pmatrix}0\\\\ -2\\\\ 5\\end{pmatrix} - 1 \\cdot \\begin{pmatrix}1\\\\ 0\\\\ -1\\end{pmatrix} = \\begin{pmatrix}7\\\\ 14\\\\ 21\\end{pmatrix} + \\begin{pmatrix}0\\\\ -6\\\\ 15\\end{pmatrix} + \\begin{pmatrix}-1\\\\ 0\\\\ 1\\end{pmatrix} = \\begin{pmatrix}6\\\\ 8\\\\ 37\\end{pmatrix} = v$."
+        },
+        {
+            id: 4,
+            question: "Gegeben seien die vier Punkte $p_1 = (1, 5)$, $p_2 = (3, 7)$, $p_3 = (-3, 9)$, $p_4 = (2, 6)$ im $\\mathbb{R}^2$. Welches ist der größte Abstand $D$, den zwei dieser Punkte voneinander aufweisen?",
+            options: [
+                "$D = 2\\sqrt{10}$",
+                "$D = 4\\sqrt{2}$",
+                "$D = \\sqrt{34}$",
+                "$D = \\sqrt{65}$"
+            ],
+            correct: 0,
+            explanation: "Die korrekte Lösung ist (a). Man berechnet alle Abstände $d(p_i, p_j) = \\|p_i - p_j\\|$. Der maximale Abstand liegt zwischen $p_2$ und $p_3$: $d(p_2, p_3) = \\|\\begin{pmatrix}3\\\\ 7\\end{pmatrix} - \\begin{pmatrix}-3\\\\ 9\\end{pmatrix}\\| = \\|\\begin{pmatrix}6\\\\ -2\\end{pmatrix}\\| = \\sqrt{6^2 + (-2)^2} = \\sqrt{40} = 2\\sqrt{10}$."
+        },
+        {
+            id: 5,
+            question: "Welcher der folgenden Ausdrücke definiert ein Skalarprodukt auf dem Vektorraum der reellen $2 \\times 2$-Matrizen?",
+            options: [
+                "$\\langle A, B \\rangle := \\|A\\| \\cdot \\|B\\|$",
+                "$\\langle A, B \\rangle := AB$",
+                "$\\langle A, B \\rangle := \\det(AB)$",
+                "$\\langle A, B \\rangle := \\operatorname{spur}(AB^T)$"
+            ],
+            correct: 3,
+            explanation: "Die korrekte Lösung ist (d). Nur dieser Ausdruck erfüllt die Bedingung $\\langle A, A \\rangle = 0 \\iff A = 0$ sowie die Linearitätseigenschaften eines Skalarproduktes (z.B. $\\langle A, B + C \\rangle = \\langle A, B \\rangle + \\langle A, C \\rangle$)."
+        },
+        {
+            id: 6,
+            question: "Es seien $A, B \\in \\mathbb{R}^{n\\times n}$ zwei reelle Matrizen und $I_n$ die Einheitsmatrix. Welche der folgenden Antwortmöglichkeiten ist <b>falsch</b>?",
+            options: [
+                "Es gilt stets $\\det(A^2 + 2A + I_n) = (\\det(A + I_n))^2$.",
+                "Es gilt stets $\\det(AB) = \\det(BA)$.",
+                "Es gilt stets $\\det(A^2 + 2AB + B^2) = (\\det(A + B))^2$.",
+                "Es gilt stets $\\det(A^2 + 2AB + 2BA + 4B^2) = (\\det(A + 2B))^2$."
+            ],
+            correct: 2,
+            explanation: "Die korrekte Lösung ist (c), da diese Aussage falsch ist. Es gilt $\\det((A+B)^2) = (\\det(A+B))^2$. Aber $(A+B)^2 = A^2 + AB + BA + B^2$, was im Allgemeinen (wegen $AB \\neq BA$) nicht gleich $A^2 + 2AB + B^2$ ist."
+        },
+        {
+            id: 7,
+            question: "Welche der folgenden Abbildungen $f$ ist linear?",
+            options: [
+                "$f : \\mathbb{R} \\rightarrow \\mathbb{R}, x \\mapsto 0$",
+                "$f : \\mathbb{R} \\rightarrow \\mathbb{R}, x \\mapsto 2x + 1$",
+                "$f : \\mathbb{R}^{2\\times2} \\rightarrow \\mathbb{R}^{2\\times2}, A \\mapsto I_2$",
+                "$f : \\mathbb{R}^{2\\times2} \\rightarrow \\mathbb{R}, A \\mapsto \\det(A)$"
+            ],
+            correct: 0,
+            explanation: "Die korrekte Lösung ist (a). Nur diese Funktion erfüllt $f(\\alpha x + \\beta y) = \\alpha f(x) + \\beta f(y)$. Bei (b) gilt z.B. $f(2) = 5 \\neq f(1)+f(1) = 6$. Bei (c) ist $f(A+B) = I_2 \\neq 2I_2$. Bei (d) ist die Determinante nicht additiv."
+        },
+        {
+            id: 8,
+            question: "Gegeben seien die drei Punkte $A = (-1, 3, 5)$, $B = (2, -3, -4)$ und $C = (2, 1, -2)$ im $\\mathbb{R}^3$. Welcher Punkt $P$ ist die Orthogonalprojektion von $C$ auf die Gerade $g$ durch $A$ und $B$?",
+            options: [
+                "$P = (-2, 5, 8)$",
+                "$P = (0, 1, 2)$",
+                "$P = (1, -1, -1)$",
+                "$P = (3, -5, -7)$"
+            ],
+            correct: 2,
+            explanation: "Die korrekte Lösung ist (c). Die Gerade $g$ hat die Richtung $\\overrightarrow{AB} = \\begin{pmatrix}3\\\\-6\\\\-9\\end{pmatrix}$. Für $P = (1,-1,-1)$ liegt $P$ auf $g$ (mit $\\lambda = 2/3$) und es gilt $\\overrightarrow{AB} \\cdot \\overrightarrow{PC} = \\begin{pmatrix}3\\\\-6\\\\-9\\end{pmatrix} \\cdot \\begin{pmatrix}1\\\\2\\\\-1\\end{pmatrix} = 3 - 12 + 9 = 0$. Somit stehen sie senkrecht."
+        },
+        {
+            id: 9,
+            question: "Welche Dimension hat der Vektorraum $V$ bestehend aus allen Matrizen $A = \\begin{pmatrix}a&b&c\\\\ 0&d&e\\\\ 0&0&f\\end{pmatrix}$ mit $a, b, c, d, e, f \\in \\mathbb{R}$ und $\\operatorname{spur}(A) = 0$?",
+            options: [
+                "$\\dim(V) = 3$",
+                "$\\dim(V) = 4$",
+                "$\\dim(V) = 5$",
+                "$\\dim(V) = 6$"
+            ],
+            correct: 2,
+            explanation: "Die korrekte Lösung ist (c). Die Matrix hat zunächst 6 Freiheitsgrade. Die Bedingung $\\operatorname{spur}(A) = a + d + f = 0$ stellt eine lineare Restriktion dar ($f = -a-d$). Somit verbleiben $6 - 1 = 5$ frei wählbare Variablen."
+        },
+        {
+            id: 10,
+            question: "Welche der folgenden Mengen ist <b>kein</b> Untervektorraum des Vektorraumes $\\mathbb{R}^{3\\times3}$?",
+            options: [
+                "Menge A: Matrizen mit $a=d+e$",
+                "Menge B: Matrizen mit $a=d-e$",
+                "Menge C: Matrizen mit $a=d+1$",
+                "Menge D: Matrizen mit $a=2d$"
+            ],
+            correct: 2,
+            explanation: "Die korrekte Lösung ist (c). Ein Untervektorraum muss den Nullvektor (hier die Nullmatrix) enthalten. Wenn man $d=0$ setzt, verlangt Bedingung C, dass $a=1$ ist. Die Nullmatrix erfüllt diese Bedingung nicht. Zudem scheitert die Skalarmultiplikation: $\\lambda a = \\lambda(d+1) = \\lambda d + \\lambda \\neq (\\lambda d) + 1$."
+        },
+        {
+            id: 11,
+            question: "Welchen Rang hat die $4 \\times 4$-Matrix $\\begin{pmatrix}0&0&1&5\\\\ 0&0&2&10\\\\ 1&1&6&8\\\\ 0&0&5&3\\end{pmatrix}$?",
+            options: [
+                "1",
+                "2",
+                "3",
+                "4"
+            ],
+            correct: 2,
+            explanation: "Die korrekte Lösung ist (c). Überführt man die Matrix in Zeilenstufenform, so bemerkt man, dass die zweite Zeile genau das Doppelte der ersten Zeile ist (liefert eine Nullzeile). Die übrigen drei Zeilen sind linear unabhängig, somit ist der Rang 3."
+        },
+        {
+            id: 12,
+            question: "Betrachten Sie den Vektorraum $\\mathcal{F}(\\mathbb{R}, \\mathbb{R})$ und den Unterraum $\\mathcal{P}_3$ der Polynome mit Grad $\\le 3$. Welche Aussage ist richtig?",
+            options: [
+                "$\\sin^2(x)$ und $\\cos^2(x)$ sind linear abhängig in $\\mathcal{F}$.",
+                "$p(x) = x^2 + 2x - 1$ und $q(x) = x(x^2 + 2x - 1)$ sind linear abhängig in $\\mathcal{F}$.",
+                "Es gilt $\\operatorname{span}\\{5, 1+x, 1+x+x^2, x^3+2\\} = \\mathcal{P}_3$.",
+                "Die Dimension des Untervektorraumes $\\mathcal{P}_3$ ist 3."
+            ],
+            correct: 2,
+            explanation: "Die korrekte Lösung ist (c). Die vier Polynome sind linear unabhängig und spannen somit den 4-dimensionalen Raum $\\mathcal{P}_3$ auf (dessen Basis z.B. $\\{1, x, x^2, x^3\\}$ ist, weshalb $\\dim(\\mathcal{P}_3) = 4$ ist)."
+        },
+        {
+            id: 13,
+            question: "Für welchen Parameter $a \\in \\mathbb{R}$ hat das Gleichungssystem $x + y + 3z = 1$, $(a+1)x - 2z = 2$, $x + (2-2a)y = 3$ nur den Punkt $(3, -8, 2)$ als Lösung?",
+            options: [
+                "$a = 1$",
+                "$a = 3$",
+                "$a = 5$",
+                "$a = 7$"
+            ],
+            correct: 0,
+            explanation: "Die korrekte Lösung ist (a). Setzt man den Punkt in die zweite Gleichung ein: $(a+1)(3) - 2(2) = 2 \\Rightarrow 3a + 3 - 4 = 2 \\Rightarrow 3a = 3 \\Rightarrow a = 1$. Auch die dritte Gleichung ist dann erfüllt: $3 + (2-2)(-8) = 3$."
+        },
+        {
+            id: 14,
+            question: "Welchen Wert hat die Spur der Matrix, die aus der folgenden Summe entsteht? $\\begin{pmatrix}1&x&1\\\\ 2&3&7\\\\ 1&0&-2\\end{pmatrix} \\begin{pmatrix}0&-2&-3\\\\ 1&4&x\\\\ 2&3&1\\end{pmatrix} + \\begin{pmatrix}1\\\\ 2\\\\ 3\\end{pmatrix} \\begin{pmatrix}0&3&-2\\end{pmatrix} + \\begin{pmatrix}-x&2&1\\\\ -1&1&1\\\\ 2&-3&4\\end{pmatrix}$",
+            options: [
+                "$x + 1$",
+                "$2x + 3$",
+                "25",
+                "31"
+            ],
+            correct: 3,
+            explanation: "Die korrekte Lösung ist (d). Die Spur ist die Summe der Diagonalelemente. Wir müssen nur die Diagonalelemente der Ergebnismatrizen berechnen. Erster Term Diagonale: $(x+2) + (29) + (-5) = x+26$. Zweiter Term Diagonale: $0 + 6 - 6 = 0$. Dritter Term Diagonale: $-x + 1 + 4 = 5-x$. Summe: $(x+26) + 0 + (5-x) = 31$."
+        },
+        {
+            id: 15,
+            question: "Wie lautet das charakteristische Polynom der Matrix $\\begin{pmatrix}1&2&5\\\\ 0&-3&-5\\\\ 0&0&2\\end{pmatrix}$?",
+            options: [
+                "$-x^3 + 7x - 6$",
+                "$-x^3 + 2x^2 + 5x + 1$",
+                "$-x^3 + 3x^2 - 3x + 6$",
+                "$-x^3 + 4$"
+            ],
+            correct: 0,
+            explanation: "Die korrekte Lösung ist (a). Es handelt sich um eine Dreiecksmatrix, daher sind die Eigenwerte direkt ablesbar: 1, -3 und 2. Das charakteristische Polynom lautet $(1-x)(-3-x)(2-x) = -x^3 + 7x - 6$. Alternativ sieht man, dass der konstante Term der Determinante (1*-3*2 = -6) entsprechen muss."
+        },
+        {
+            id: 16,
+            question: "Welche der folgenden Matrizen ist <b>nicht</b> orthogonal?",
+            options: [
+                "$\\begin{pmatrix}0&1&0\\\\ 0&0&1\\\\ 1&0&0\\end{pmatrix}$",
+                "$\\begin{pmatrix}3/5&0&-4/5\\\\ 0&1&0\\\\ 4/5&0&3/5\\end{pmatrix}$",
+                "$\\begin{pmatrix}1/\\sqrt{2}&0&1/\\sqrt{2}\\\\ -1/\\sqrt{2}&0&1/\\sqrt{2}\\\\ 0&1&0\\end{pmatrix}$",
+                "$\\begin{pmatrix}0&1&0\\\\ 1/2&0&\\sqrt{3}/\\sqrt{2}\\\\ 3/2&0&1/2\\end{pmatrix}$"
+            ],
+            correct: 3,
+            explanation: "Die korrekte Lösung ist (d). Eine Matrix ist orthogonal, wenn $Q^T Q = I$ gilt (oder wenn ihre Spalten/Zeilen orthonormiert sind). Die Länge der ersten Spalte von Matrix (d) ist $\\sqrt{0^2 + (1/2)^2 + (3/2)^2} = \\sqrt{10/4} \\neq 1$. Da die Spaltenvektoren nicht normiert sind, ist die Matrix nicht orthogonal."
+        },
+        {
+            id: 17,
+            question: "Sei $M = \\begin{pmatrix}1&2&5&1&3\\\\ 0&1&1&1&2\\\\ 2&2&1&0&5\\end{pmatrix}$. Welche der folgenden Mengen ist eine Basis von $\\ker(M)$?",
+            options: [
+                "Menge mit Vektoren $(-2, -19, 3, 0, 7)^T$ und $(1, -1, 0, 1, 0)^T$",
+                "Menge nur mit dem Nullvektor",
+                "Menge nur mit Vektor $(1, -1, 0, 1, 0)^T$",
+                "Menge mit Vektoren $(-2, -17, 3, 0, 7)^T$ und $(1, -1, 0, 1, 0)^T$"
+            ],
+            correct: 3,
+            explanation: "Die korrekte Lösung ist (d). Wenn man die Vektoren aus (d) mit $M$ multipliziert, ergibt das in beiden Fällen den Nullvektor. Da die Vektoren auch linear unabhängig sind und die Dimension des Kerns 2 beträgt (Rang von M ist 3), bilden sie eine Basis des Kerns."
+        },
+        {
+            id: 18,
+            question: "Welcher der folgenden Vektoren liegt <b>nicht</b> im Bild der Matrix $\\begin{pmatrix}2&-3&-5\\\\ 4&7&1\\\\ 6&4&-4\\end{pmatrix}$?",
+            options: [
+                "$\\begin{pmatrix}2\\\\ 4\\\\ 6\\end{pmatrix}$",
+                "$\\begin{pmatrix}-5\\\\ 1\\\\ -4\\end{pmatrix}$",
+                "$\\begin{pmatrix}-3\\\\ 7\\\\ -1\\end{pmatrix}$",
+                "$\\begin{pmatrix}-3\\\\ 5\\\\ 2\\end{pmatrix}$"
+            ],
+            correct: 2,
+            explanation: "Die korrekte Lösung ist (c). Man erkennt, dass in der gegebenen Matrix die dritte Zeile die Summe der ersten beiden Zeilen ist ($2+4=6, -3+7=4, -5+1=-4$). Daher müssen auch alle Vektoren im Bild diese Eigenschaft haben. Für Vektor (c) gilt: $-3 + 7 = 4 \\neq -1$. Somit liegt er nicht im Bild."
+        },
+        {
+            id: 19,
+            question: "Welchen Wert hat die Determinante der Matrix $\\begin{pmatrix}1&2&2&0\\\\ 1&2&0&0\\\\ 0&1&2&0\\\\ 1&2&1&1\\end{pmatrix}$?",
+            options: [
+                "1",
+                "2",
+                "3",
+                "4"
+            ],
+            correct: 1,
+            explanation: "Die korrekte Lösung ist (b). Entwickelt man die Matrix nach der vierten Spalte, erhält man $(-1)^{4+4} \\cdot 1 \\cdot \\det\\begin{pmatrix}1&2&2\\\\ 1&2&0\\\\ 0&1&2\\end{pmatrix}$. Diese $3\\times3$ Matrix entwickelt man nach der ersten Spalte oder wendet die Sarrus-Regel an und erhält als Wert 2."
+        },
+        {
+            id: 20,
+            question: "Welche der folgenden Mengen von Vektoren ist <b>keine</b> Basis des $\\mathbb{R}^3$?",
+            options: [
+                "$\\{(1, 2, 1)^T, (3, 0, 1)^T, (1, 1, 2)^T\\}$",
+                "$\\{(1, 0, -2)^T, (3, 1, -3)^T, (1, 0, 0)^T\\}$",
+                "$\\{(1, 2, 3)^T, (-3, 0, -1)^T, (1, 0, 1)^T\\}$",
+                "$\\{(1, 2, 1)^T, (3, -2, -3)^T, (-1, 2, 2)^T\\}$"
+            ],
+            correct: 3,
+            explanation: "Die korrekte Lösung ist (d). Die Vektoren in (d) sind linear abhängig. Es gilt $\\frac{1}{2}(1, 2, 1)^T - \\frac{1}{2}(3, -2, -3)^T = (-1, 2, 2)^T$. Da die Vektoren linear abhängig sind und ihre Determinante 0 ist, bilden sie keine Basis für den $\\mathbb{R}^3$."
+        }
+    ];
+
+    let totalQuestions = quizQuestions.length;
+    let checkedCount = 0;
+    let correctCount = 0;
+
+    const container = document.getElementById('quiz-container');
+
+    document.getElementById('checked-counter').innerText = `0 von ${totalQuestions} Fragen gelöst`;
+
+    quizQuestions.forEach((q, index) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `card-${q.id}`;
+
+        let optionsHtml = '';
+        q.options.forEach((opt, optIndex) => {
+            optionsHtml += `
+                <li>
+                    <label id="label-${q.id}-${optIndex}">
+                        <input type="radio" name="q${q.id}" value="${optIndex}">
+                        <span>${opt}</span>
+                    </label>
+                </li>
+            `;
+        });
+
+        card.innerHTML = `
+            <div class="question-header">Aufgabe 1.MC${index + 1}</div>
+            <div class="question-text">${q.question}</div>
+            <ul class="options-list">
+                ${optionsHtml}
+            </ul>
+            <button type="button" class="btn-check" id="btn-${q.id}" onclick="validateQuestion(${q.id})">Frage prüfen</button>
+            <div class="explanation-box" id="expl-${q.id}">
+                <div class="explanation-title">Erklärung:</div>
+                <div id="expl-text-${q.id}">${q.explanation}</div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    function validateQuestion(qId) {
+        const selectedRadio = document.querySelector(`input[name="q${qId}"]:checked`);
+        
+        if (!selectedRadio) {
+            alert("Bitte wähle zuerst eine Antwort aus!");
+            return;
+        }
+
+        const checkedBtn = document.getElementById(`btn-${qId}`);
+        checkedBtn.disabled = true;
+        checkedBtn.innerText = "Überprüft";
+
+        const radios = document.querySelectorAll(`input[name="q${qId}"]`);
+        radios.forEach(r => r.disabled = true);
+
+        const qData = quizQuestions.find(q => q.id === qId);
+        const selectedValue = parseInt(selectedRadio.value);
+        const correctValue = qData.correct;
+
+        if (selectedValue === correctValue) {
+            document.getElementById(`label-${qId}-${selectedValue}`).classList.add('correct-answer');
+            correctCount++;
+        } else {
+            document.getElementById(`label-${qId}-${selectedValue}`).classList.add('wrong-answer');
+            document.getElementById(`label-${qId}-${correctValue}`).classList.add('correct-answer');
+        }
+
+        document.getElementById(`expl-${qId}`).style.display = 'block';
+
+        checkedCount++;
+        updateGlobalProgress();
+        
+        if (window.MathJax) {
+            MathJax.typesetPromise([document.getElementById(`expl-${qId}`)]);
+        }
+    }
+
+    function updateGlobalProgress() {
+        const percent = (checkedCount / totalQuestions) * 100;
+        document.getElementById('global-progress').style.width = `${percent}%`;
+        document.getElementById('checked-counter').innerText = `${checkedCount} von ${totalQuestions} Fragen gelöst`;
+        
+        const successPercent = checkedCount > 0 ? Math.round((correctCount / checkedCount) * 100) : 0;
+        document.getElementById('correct-counter').innerText = `Richtig: ${correctCount} (${successPercent}%)`;
+    }
+</script>
+
+</body>
+</html>
