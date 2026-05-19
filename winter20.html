@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinAlg Prüfung - Winter 2020</title>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --success-bg: #e8f8f0;
+            --error-color: #e74c3c;
+            --error-bg: #fdedec;
+            --background-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        /* Schlichter Zurück-Button */
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 18px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            margin-bottom: 25px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .btn-back:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(-3px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background-color: var(--background-color);
+            padding: 10px 0 20px 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .progress-container {
+            background-color: #dcdde1;
+            border-radius: 10px;
+            height: 18px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            background-color: var(--success-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+
+        .question-header {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #34495e;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f1f2f6;
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+        }
+
+        .options-list {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .options-list li {
+            margin-bottom: 12px;
+        }
+
+        .options-list label {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .options-list label:hover {
+            background-color: #f1f2f6;
+            border-color: #b2bec3;
+        }
+
+        .options-list input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .correct-answer {
+            background-color: var(--success-bg) !important;
+            border-color: var(--success-color) !important;
+            color: #1e7e34 !important;
+            font-weight: 600;
+        }
+
+        .wrong-answer {
+            background-color: var(--error-bg) !important;
+            border-color: var(--error-color) !important;
+            color: #bd2130 !important;
+            font-weight: 600;
+        }
+
+        .btn-check {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-check:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-check:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .explanation-box {
+            display: none;
+            margin-top: 20px;
+            padding: 15px 20px;
+            background-color: #eaf2f8;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 4px;
+            font-size: 0.98rem;
+        }
+
+        .explanation-title {
+            font-weight: 700;
+            color: #2980b9;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <a href="index.html" class="btn-back">
+        ⬅ Zurück zur Startseite
+    </a>
+
+    <h1>Lineare Algebra I/II</h1>
+    <div class="subtitle">Prüfung Winter 2020 - Multiple Choice</div>
+    
+    <div class="sticky-header">
+        <div class="progress-container">
+            <div class="progress-bar" id="global-progress"></div>
+        </div>
+        <div class="progress-text">
+            <span id="checked-counter">0 von 20 Fragen gelöst</span>
+            <span id="correct-counter" style="color: var(--success-color);">Richtig: 0 (0%)</span>
+        </div>
+    </div>
+
+    <div id="quiz-container"></div>
+</div>
+
+<script>
+    const quizQuestions = [
+        {
+            id: 1,
+            question: "Betrachte das folgende lineare Gleichungssystem:<br> $-x - y + z = 1$<br>$-x - y + z = -1$<br>$-x - y = 0$<br> Es gilt:",
+            options: [
+                "Das lineare Gleichungssystem hat keine Lösung.",
+                "Das lineare Gleichungssystem hat genau eine Lösung.",
+                "Das lineare Gleichungssystem hat genau drei unterschiedliche Lösungen.",
+                "Das lineare Gleichungssystem hat unendlich viele Lösungen."
+            ],
+            correct: 0,
+            explanation: "Die ersten beiden Gleichungen lauten $-x - y + z = 1$ und $-x - y + z = -1$. Da die linke Seite identisch ist, die rechte Seite aber unterschiedliche Werte (1 und -1) hat, widersprechen sich diese beiden Gleichungen ($1 = -1$ ist falsch). Das System hat folglich keine Lösung."
+        },
+        {
+            id: 2,
+            question: "Es seien die Vektoren $v_1 := \\begin{pmatrix}-1\\\\ 0\\\\ 1\\end{pmatrix}, v_2 := \\begin{pmatrix}0\\\\ 1\\\\ 1\\end{pmatrix}$ gegeben. Welcher der folgenden Vektoren ergänzt $v_1, v_2$ zu einer Basis des $\\mathbb{R}^3$?",
+            options: [
+                "$(-1, 0, 1)^T$",
+                "$(-1, 1, 2)^T$",
+                "$(1, 1, 0)^T$",
+                "$(1, 1, 1)^T$"
+            ],
+            correct: 3,
+            explanation: "Wir suchen einen Vektor, der linear unabhängig von $v_1$ und $v_2$ ist. <br>Option A ist genau $v_1$. <br>Option B ist $v_1 + v_2 = \\begin{pmatrix}-1\\\\ 1\\\\ 2\\end{pmatrix}$. <br>Option C ist $v_2 - v_1 = \\begin{pmatrix}1\\\\ 1\\\\ 0\\end{pmatrix}$. <br>Nur Option D $(1, 1, 1)^T$ lässt sich nicht als Linearkombination von $v_1$ und $v_2$ darstellen und spannt somit mit ihnen den $\\mathbb{R}^3$ auf."
+        },
+        {
+            id: 3,
+            question: "Es sei $A := \\begin{pmatrix}1 & -1 & -1\\\\ -1 & 0 & 1\\end{pmatrix} \\begin{pmatrix}0 & 0\\\\ 0 & -1\\\\ 1 & -1\\end{pmatrix}$. Wie lautet der Eintrag $a_{12}$ der Matrix $A$?",
+            options: [
+                "-1",
+                "1",
+                "2",
+                "0"
+            ],
+            correct: 2,
+            explanation: "Der Eintrag $a_{12}$ ist das Skalarprodukt der ersten Zeile der linken Matrix mit der zweiten Spalte der rechten Matrix: $(1) \\cdot (0) + (-1) \\cdot (-1) + (-1) \\cdot (-1) = 0 + 1 + 1 = 2$."
+        },
+        {
+            id: 4,
+            question: "Es sei $A := \\begin{pmatrix}1 & -1\\\\ 0 & 1\\end{pmatrix}$. Welche der folgenden Mengen ist <b>kein</b> Untervektorraum von $\\mathbb{R}^2$?",
+            options: [
+                "$\\ker(A)$",
+                "$\\operatorname{Im}(A)$",
+                "$\\{x \\in \\mathbb{R}^2 : Ax = \\begin{pmatrix}1\\\\ 1\\end{pmatrix}\\}$",
+                "$\\{x \\in \\mathbb{R}^2 : Ax = \\begin{pmatrix}0\\\\ 0\\end{pmatrix}\\}$"
+            ],
+            correct: 2,
+            explanation: "Ein Untervektorraum muss zwingend den Nullvektor enthalten. Setzt man den Nullvektor in die Gleichung von Option C ein, erhält man $A \\cdot \\begin{pmatrix}0\\\\ 0\\end{pmatrix} = \\begin{pmatrix}0\\\\ 0\\end{pmatrix} \\neq \\begin{pmatrix}1\\\\ 1\\end{pmatrix}$. Folglich enthält diese Lösungsmenge eines inhomogenen linearen Gleichungssystems den Nullvektor nicht und ist kein Untervektorraum."
+        },
+        {
+            id: 5,
+            question: "Die $3 \\times 3$-Matrix $A$ erfülle $A^2 = A$ (Projektionsmatrix). Für welche der folgenden Matrizen gilt <b>immer</b> $B^2 = B$?",
+            options: [
+                "$B = I_3 + A$",
+                "$B = I_3 - A$",
+                "$B = 2A$",
+                "$B = A + A^T$"
+            ],
+            correct: 1,
+            explanation: "Wir quadrieren die Optionen (mit dem Wissen, dass $I_3$ mit $A$ kommutiert): <br>Für $B = I_3 - A$ gilt: $(I_3 - A)^2 = I_3^2 - 2A + A^2$. Da $A^2 = A$ gilt, vereinfacht sich dies zu $I_3 - 2A + A = I_3 - A = B$. Somit ist $I_3 - A$ stets ebenfalls eine Projektionsmatrix (die Projektion auf das orthogonale Komplement)."
+        },
+        {
+            id: 6,
+            question: "Es seien die Basen $B = (4x, 2x^2 - 4x + 1, 3x^2 + 3x + 1)$ und $B' = (x^2, x, 1)$ von $P_2$ gegeben. Welche der folgenden Matrizen entspricht der Übergangsmatrix von $B$ nach $B'$?",
+            options: [
+                "$\\begin{pmatrix}0 & 2 & 3\\\\ 4 & -4 & 3\\\\ 0 & 1 & 1\\end{pmatrix}$",
+                "$\\begin{pmatrix}0 & 1 & 1\\\\ 4 & -4 & 3\\\\ 0 & 1 & 2\\end{pmatrix}$",
+                "$\\begin{pmatrix}1 & -2 & 3\\\\ 1 & -1 & 1\\\\ 1 & 4 & 6\\end{pmatrix}$",
+                "$\\begin{pmatrix}0 & -2 & 3\\\\ 1 & 1 & 1\\\\ 0 & 4 & 6\\end{pmatrix}$"
+            ],
+            correct: 0,
+            explanation: "Die Übergangsmatrix enthält in den Spalten die Koeffizienten der Vektoren der alten Basis $B$ bezüglich der neuen Basis $B'$. <br>Erster Vektor aus $B$: $4x = 0x^2 + 4x + 0 \\cdot 1$. Die erste Spalte ist also $(0, 4, 0)^T$. <br>Das genügt schon, um Matrix A als einzige korrekte Antwort zu identifizieren. Zur Kontrolle: Der zweite Vektor $2x^2 - 4x + 1$ hat die Koeffizienten $(2, -4, 1)^T$ (zweite Spalte)."
+        },
+        {
+            id: 7,
+            question: "Es sei $A := \\begin{pmatrix}1 & -3 & 3 & -2\\\\ 1 & -2 & -4 & 1\\\\ -4 & 1 & 0 & 1\\end{pmatrix}$. Welcher der folgenden Vektoren liegt im Kern von A?",
+            options: [
+                "$(1, -1, 2, 5)^T$",
+                "$(-1, -1, 2, 5)^T$",
+                "$(1, -1, 2, -5)^T$",
+                "$(1, -1, -2, 5)^T$"
+            ],
+            correct: 0,
+            explanation: "Ein Vektor liegt im Kern, wenn $Ax = 0$ gilt. Wir testen Option A durch Multiplikation der ersten Zeile von $A$ mit dem Vektor: $1(1) + (-3)(-1) + 3(2) + (-2)(5) = 1 + 3 + 6 - 10 = 0$. Die zweite Zeile: $1(1) + (-2)(-1) + (-4)(2) + 1(5) = 1 + 2 - 8 + 5 = 0$. Die dritte Zeile: $-4(1) + 1(-1) + 0(2) + 1(5) = -4 - 1 + 0 + 5 = 0$. Der Vektor $(1, -1, 2, 5)^T$ löst also das Gleichungssystem."
+        },
+        {
+            id: 8,
+            question: "Welcher der folgenden Vektoren liegt <b>nicht</b> im Bild der Matrix $\\begin{pmatrix}3 & -4\\\\ 1 & 4\\\\ 1 & -2\\end{pmatrix}$?",
+            options: [
+                "$(-4, 4, -2)^T$",
+                "$(1, 1, 1)^T$",
+                "$(3, 1, 1)^T$",
+                "$(-1, 5, -1)^T$"
+            ],
+            correct: 1,
+            explanation: "Die Bildvektoren sind Linearkombinationen der Spalten der Matrix. Durch scharfes Hinsehen bemerkt man, dass die dritte Zeile $(1, -2)$ genau dem Wert (Spalte1 + Spalte2) / (-1) entspricht? Nein, einfacher: Wir schauen, ob sich das LGS $Ax = b$ lösen lässt. Option B führt auf das System $3x - 4y = 1$, $x + 4y = 1$, $x - 2y = 1$. Aus Gleichung 2 und 3: $x+4y=x-2y \\Rightarrow 6y=0 \\Rightarrow y=0$. Dann muss $x=1$ sein. Aber für $x=1, y=0$ liefert die erste Gleichung $3(1)-4(0) = 3 \\neq 1$. Also liegt (1,1,1) nicht im Bild."
+        },
+        {
+            id: 9,
+            question: "Es sei eine Basis von $\\mathbb{R}^3$ gegeben durch $b_1 := (2, 0, -2)^T, b_2 := (0, 0, 1)^T, b_3 := (0, 3, 1)^T$. Es bezeichne $e_1, e_2, e_3$ die Orthonormalbasis aus dem Gram-Schmidt-Verfahren. Welche Aussage ist richtig?",
+            options: [
+                "$e_3 = (1, 0, 0)^T$",
+                "$e_3 = (0, 1, 0)^T$",
+                "$e_3 = (0, 0, 1)^T$",
+                "$e_3 = (0, 0, -1)^T$"
+            ],
+            correct: 1,
+            explanation: "Beim Gram-Schmidt-Verfahren spannen nach jedem Schritt die Vektoren $e_1, ..., e_k$ denselben Raum auf wie $b_1, ..., b_k$. $b_1$ liegt in der $xz$-Ebene ($y=0$). $b_2$ liegt ebenfalls in der $xz$-Ebene. Damit spannen $e_1$ und $e_2$ die komplette $xz$-Ebene auf. Der dritte Vektor $e_3$ muss orthogonal zu $e_1$ und $e_2$ sein, also senkrecht auf der $xz$-Ebene stehen. Folglich muss $e_3$ in Richtung der $y$-Achse zeigen. Da $b_3$ eine positive $y$-Komponente (+3) hat, zeigt auch $e_3$ in die positive $y$-Richtung: $(0, 1, 0)^T$."
+        },
+        {
+            id: 10,
+            question: "Gegeben seien zwei orthonormale Vektoren $u_1, u_2 \\in \\mathbb{R}^3$. Welche der folgenden Aussagen trifft zu?",
+            options: [
+                "Die Vektoren $u_1 - u_2$ und $u_1 + u_2$ sind orthogonal.",
+                "Die Vektoren $u_1$ und $u_1 + u_2$ sind orthogonal.",
+                "Die Vektoren $u_1 - u_2$ und $u_2$ sind orthogonal.",
+                "Die Vektoren $u_1 - 2u_2$ und $u_1 + 2u_2$ sind orthogonal."
+            ],
+            correct: 0,
+            explanation: "Zwei Vektoren sind orthogonal, wenn ihr Skalarprodukt 0 ergibt. Wir berechnen $\\langle u_1 - u_2, u_1 + u_2 \\rangle = \\langle u_1, u_1 \\rangle + \\langle u_1, u_2 \\rangle - \\langle u_2, u_1 \\rangle - \\langle u_2, u_2 \\rangle$. Da $u_1, u_2$ orthonormal sind, gilt $\\langle u_1, u_2\\rangle = 0$ und $\\langle u_1, u_1\\rangle = \\langle u_2, u_2\\rangle = 1$. Das Skalarprodukt vereinfacht sich somit zu $1 + 0 - 0 - 1 = 0$. Die Vektoren stehen senkrecht aufeinander."
+        },
+        {
+            id: 11,
+            question: "Es bezeichne $P_2$ den Vektorraum der Polynome vom Grad $\\le 2$. Die Abbildung $F : P_2 \\rightarrow P_2$ sei gegeben durch $p \\mapsto p'$ (die Ableitung). Welche Aussage ist wahr?",
+            options: [
+                "$\\operatorname{im}(F) = P_2$",
+                "$\\ker(F) = \\{0\\}$",
+                "$F$ ist bijektiv.",
+                "$F$ ist linear."
+            ],
+            correct: 3,
+            explanation: "Die Ableitung ist ein klassisches Beispiel für einen linearen Operator, da stets gilt: $(c \\cdot p(x) + q(x))' = c \\cdot p'(x) + q'(x)$. Option A ist falsch, da das Bild nur Polynome vom Grad 1 enthält. Option B ist falsch, da der Kern alle konstanten Polynome enthält. Option C ist falsch, da die Abbildung wegen $\\ker(F) \\neq \\{0\\}$ nicht injektiv ist."
+        },
+        {
+            id: 12,
+            question: "Es sei $A := \\begin{pmatrix}0 & 0 & 1 & 0\\\\ 1 & 0 & 1 & 0\\\\ 0 & 1 & 1 & 0\\\\ 1 & 1 & 0 & 1\\end{pmatrix}$. Was ist $\\det(A)$?",
+            options: [
+                "-1",
+                "0",
+                "1",
+                "2"
+            ],
+            correct: 2,
+            explanation: "Wir entwickeln die Determinante nach der vierten Spalte: $\\det(A) = 1 \\cdot (-1)^{4+4} \\cdot \\det\\begin{pmatrix}0 & 0 & 1\\\\ 1 & 0 & 1\\\\ 0 & 1 & 1\\end{pmatrix}$. Diese $3 \\times 3$-Matrix entwickeln wir nach der ersten Zeile: $1 \\cdot (-1)^{1+3} \\cdot \\det\\begin{pmatrix}1 & 0\\\\ 0 & 1\\end{pmatrix} = 1 \\cdot 1 \\cdot 1 = 1$."
+        },
+        {
+            id: 13,
+            question: "Es sei A eine invertierbare $3\\times3$ Matrix. Welche der folgenden Aussagen ist <b>immer</b> korrekt?",
+            options: [
+                "Die Matrix $A - A^T$ ist invertierbar.",
+                "Die Matrix $A^T$ ist invertierbar.",
+                "Die Matrix $A + I_3$ ist invertierbar.",
+                "Die Matrix $A + A^T$ ist invertierbar."
+            ],
+            correct: 1,
+            explanation: "Es gilt die allgemeine Rechenregel $\\det(A^T) = \\det(A)$. Da A invertierbar ist, gilt $\\det(A) \\neq 0$. Folglich ist auch $\\det(A^T) \\neq 0$, wodurch die Transponierte $A^T$ immer ebenfalls invertierbar ist. Die anderen Matrizen (z.B. $A - A^T$) können singulär (Determinante 0) sein, falls A z.B. symmetrisch ist."
+        },
+        {
+            id: 14,
+            question: "Es sei $U := \\{A \\in \\mathbb{R}^{4\\times4} : A^T = -A\\}$ der Untervektorraum der schiefsymmetrischen Matrizen. Welche Aussage ist korrekt?",
+            options: [
+                "$\\dim(U) = 10$",
+                "$\\dim(U) = 6$",
+                "$\\dim(U) = 12$",
+                "$\\dim(U) = 3$"
+            ],
+            correct: 1,
+            explanation: "Eine schiefsymmetrische Matrix erfüllt $A_{ij} = -A_{ji}$. Das bedeutet: (1) Alle Elemente auf der Hauptdiagonale müssen 0 sein ($A_{ii} = -A_{ii} \\Rightarrow A_{ii} = 0$). (2) Die Elemente oberhalb der Diagonale bestimmen die Elemente unterhalb eindeutig. In einer $4 \\times 4$-Matrix gibt es $4 \\cdot 4 = 16$ Einträge. Zieht man die 4 Nullen auf der Diagonale ab, bleiben 12 Einträge. Da jeweils zwei einander bedingen, haben wir genau $12 / 2 = 6$ frei wählbare Einträge (Freiheitsgrade). Also $\\dim(U) = 6$."
+        },
+        {
+            id: 15,
+            question: "Betrachte folgendes Differentialgleichungssystem: $y_1' = 2y_1 - y_2 - y_3$, $y_2' = -y_1 + 2y_2 - y_3$, $y_3' = -y_1 - y_2 + 2y_3$. Welche Dimension hat der Lösungsraum?",
+            options: [
+                "0",
+                "1",
+                "2",
+                "3"
+            ],
+            correct: 3,
+            explanation: "Ein homogenes lineares Differentialgleichungssystem 1. Ordnung der Form $y' = Ay$ mit einer $n \\times n$-Matrix A hat immer einen Lösungsraum der Dimension $n$. Da es sich hier um 3 Gleichungen mit 3 unbekannten Funktionen handelt ($n=3$), ist die Dimension des Lösungsraums exakt 3."
+        },
+        {
+            id: 16,
+            question: "Die Abbildung $\\|\\cdot\\|_\\infty : \\mathbb{R}^3 \\rightarrow \\mathbb{R}$ sei gegeben durch $x \\mapsto \\max |x_i|$. Was ist $\\| (2, 0, 0)^T - (1, 3, 0)^T + (1, -2, 4)^T \\|_\\infty$?",
+            options: [
+                "-5",
+                "5",
+                "9",
+                "4"
+            ],
+            correct: 1,
+            explanation: "Wir berechnen zuerst den resultierenden Vektor im Inneren der Norm: $\\begin{pmatrix}2\\\\ 0\\\\ 0\\end{pmatrix} - \\begin{pmatrix}1\\\\ 3\\\\ 0\\end{pmatrix} + \\begin{pmatrix}1\\\\ -2\\\\ 4\\end{pmatrix} = \\begin{pmatrix}2-1+1\\\\ 0-3-2\\\\ 0-0+4\\end{pmatrix} = \\begin{pmatrix}2\\\\ -5\\\\ 4\\end{pmatrix}$. Die Maximumsnorm $\\| \\cdot \\|_\\infty$ verlangt das betragsmäßige Maximum aller Komponenten: $\\max(|2|, |-5|, |4|) = \\max(2, 5, 4) = 5$."
+        },
+        {
+            id: 17,
+            question: "Es sei A eine reelle $3 \\times 3$-Matrix. Welche der folgenden Aussagen ist <b>immer</b> korrekt?",
+            options: [
+                "$\\det(A) = \\det(-A^T)$",
+                "$\\det(-A) = \\det(A)$",
+                "$\\det(A + A^T) = \\det(A) + \\det(A^T)$",
+                "$\\det(A - A^T) = \\det(A) - \\det(A^T)$"
+            ],
+            correct: 3,
+            explanation: "Achtung, das ist eine Trickfrage, die ein spezielles Verhalten von schiefsymmetrischen Matrizen ungerader Dimension ausnutzt. Setzen wir $M = A - A^T$. Dann gilt $M^T = A^T - A = -M$. Es gilt $\\det(M) = \\det(M^T) = \\det(-M) = (-1)^3 \\det(M) = -\\det(M)$. Daraus folgt $\\det(M) = 0$. Wir wissen auch, dass $\\det(A) - \\det(A^T) = \\det(A) - \\det(A) = 0$. Somit ist $0 = 0$ und die Gleichung (D) ist immer erfüllt."
+        },
+        {
+            id: 18,
+            question: "Wir definieren die Menge $M := \\{A \\in \\mathbb{R}^{3\\times3} : A^T = A \\text{ und } A^3 = I_3\\}$. Welche Aussage ist wahr?",
+            options: [
+                "Die Menge M enthält unendlich viele Elemente.",
+                "Die Menge M enthält keine Elemente.",
+                "Die Menge M enthält genau ein Element.",
+                "Die Menge M enthält genau zwei Elemente."
+            ],
+            correct: 2,
+            explanation: "Da $A$ symmetrisch ist ($A^T=A$), ist $A$ diagonalisierbar mit ausschließlich reellen Eigenwerten. Wegen $A^3 = I$ muss für alle Eigenwerte $\\lambda_i$ gelten: $\\lambda_i^3 = 1$. Die einzige reelle Lösung dieser Gleichung ist $\\lambda = 1$. Da $A$ diagonalisierbar ist und alle Eigenwerte 1 sind, muss $A$ zwingend die Einheitsmatrix $I_3$ sein. Es gibt also nur ein einziges Element in der Menge."
+        },
+        {
+            id: 19,
+            question: "Es sei $A$ eine reelle $5 \\times 5$-Matrix. Welche der folgenden Aussagen ist <b>immer</b> richtig?",
+            options: [
+                "Die Matrix $A$ ist diagonalisierbar.",
+                "Die Matrizen $A$ und $A^T$ haben denselben Rang.",
+                "Die Matrizen $A$ und $A^T$ haben dasselbe Bild.",
+                "Die Matrizen $A$ und $A^T$ haben denselben Kern."
+            ],
+            correct: 1,
+            explanation: "Ein grundlegender Satz der linearen Algebra besagt: Zeilenrang = Spaltenrang. Da $A^T$ durch Vertauschen von Zeilen und Spalten entsteht, ist der Spaltenrang von $A^T$ identisch mit dem Zeilenrang von $A$. Beide Matrizen haben somit stets exakt denselben Rang."
+        },
+        {
+            id: 20,
+            question: "Es seien $A$ und $B$ zwei ähnliche Matrizen ($B = T^{-1}AT$). Welche der folgenden Aussagen ist <b>falsch</b>?",
+            options: [
+                "Falls $A = 0$, dann gilt $B = 0$.",
+                "Falls $A^3 = I$ ist, dann gilt ebenfalls $B^3 = I$.",
+                "Falls $\\det(A) = 1$, dann gilt $\\det(B) = 1$.",
+                "Falls $A$ eine Diagonalmatrix ist, dann ist $B$ ebenfalls eine Diagonalmatrix."
+            ],
+            correct: 3,
+            explanation: "Ähnliche Matrizen stellen dieselbe lineare Abbildung bezüglich verschiedener Basen dar. Nur weil A in einer Basis (als Diagonalmatrix) diagonal ist, bedeutet das nicht, dass sie in einer *anderen* Basis B immer noch eine Diagonalmatrix ist (T kann ja Vektoren völlig neu durchmischen). Deshalb ist Option (D) falsch."
+        }
+    ];
+
+    let totalQuestions = quizQuestions.length;
+    let checkedCount = 0;
+    let correctCount = 0;
+
+    const container = document.getElementById('quiz-container');
+
+    document.getElementById('checked-counter').innerText = `0 von ${totalQuestions} Fragen gelöst`;
+
+    quizQuestions.forEach((q, index) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `card-${q.id}`;
+
+        let optionsHtml = '';
+        q.options.forEach((opt, optIndex) => {
+            optionsHtml += `
+                <li>
+                    <label id="label-${q.id}-${optIndex}">
+                        <input type="radio" name="q${q.id}" value="${optIndex}">
+                        <span>${opt}</span>
+                    </label>
+                </li>
+            `;
+        });
+
+        card.innerHTML = `
+            <div class="question-header">Aufgabe ${index + 1}</div>
+            <div class="question-text">${q.question}</div>
+            <ul class="options-list">
+                ${optionsHtml}
+            </ul>
+            <button type="button" class="btn-check" id="btn-${q.id}" onclick="validateQuestion(${q.id})">Frage prüfen</button>
+            <div class="explanation-box" id="expl-${q.id}">
+                <div class="explanation-title">Erklärung:</div>
+                <div id="expl-text-${q.id}">${q.explanation}</div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    function validateQuestion(qId) {
+        const selectedRadio = document.querySelector(`input[name="q${qId}"]:checked`);
+        
+        if (!selectedRadio) {
+            alert("Bitte wähle zuerst eine Antwort aus!");
+            return;
+        }
+
+        const checkedBtn = document.getElementById(`btn-${qId}`);
+        checkedBtn.disabled = true;
+        checkedBtn.innerText = "Überprüft";
+
+        const radios = document.querySelectorAll(`input[name="q${qId}"]`);
+        radios.forEach(r => r.disabled = true);
+
+        const qData = quizQuestions.find(q => q.id === qId);
+        const selectedValue = parseInt(selectedRadio.value);
+        const correctValue = qData.correct;
+
+        if (selectedValue === correctValue) {
+            document.getElementById(`label-${qId}-${selectedValue}`).classList.add('correct-answer');
+            correctCount++;
+        } else {
+            document.getElementById(`label-${qId}-${selectedValue}`).classList.add('wrong-answer');
+            document.getElementById(`label-${qId}-${correctValue}`).classList.add('correct-answer');
+        }
+
+        document.getElementById(`expl-${qId}`).style.display = 'block';
+
+        checkedCount++;
+        updateGlobalProgress();
+        
+        if (window.MathJax) {
+            MathJax.typesetPromise([document.getElementById(`expl-${qId}`)]);
+        }
+    }
+
+    function updateGlobalProgress() {
+        const percent = (checkedCount / totalQuestions) * 100;
+        document.getElementById('global-progress').style.width = `${percent}%`;
+        document.getElementById('checked-counter').innerText = `${checkedCount} von ${totalQuestions} Fragen gelöst`;
+        
+        const successPercent = checkedCount > 0 ? Math.round((correctCount / checkedCount) * 100) : 0;
+        document.getElementById('correct-counter').innerText = `Richtig: ${correctCount} (${successPercent}%)`;
+    }
+</script>
+
+</body>
+</html>

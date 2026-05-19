@@ -8,7 +8,6 @@
     <style>
         :root {
             --primary-color: #3498db;
-            --primary-hover: #2980b9;
             --background-color: #f4f6f9;
             --card-bg: #ffffff;
             --text-color: #2c3e50;
@@ -22,7 +21,7 @@
             color: var(--text-color);
             line-height: 1.6;
             margin: 0;
-            padding: 20px;
+            padding: 40px 20px; /* Schön zentriert mit Abstand nach oben */
         }
 
         .container {
@@ -30,50 +29,6 @@
             margin: 0 auto;
         }
 
-        /* --- Navigation / Dropdown --- */
-        .navigation-bar {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 40px;
-            background: var(--card-bg);
-            padding: 15px 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border: 1px solid var(--border-color);
-        }
-
-        .navigation-bar label {
-            font-weight: 700;
-            color: var(--text-color);
-            font-size: 1.1rem;
-        }
-
-        .exam-select {
-            padding: 10px 15px;
-            font-size: 1.05rem;
-            border-radius: 8px;
-            border: 2px solid var(--primary-color);
-            background-color: white;
-            color: var(--text-color);
-            cursor: pointer;
-            font-weight: 600;
-            outline: none;
-            transition: all 0.2s ease;
-            min-width: 200px;
-            box-shadow: 0 2px 5px rgba(52, 152, 219, 0.1);
-        }
-
-        .exam-select:hover {
-            border-color: var(--primary-hover);
-        }
-
-        .exam-select:focus {
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
-        }
-
-        /* --- Main Content --- */
         .welcome-card {
             background: var(--card-bg);
             padding: 40px;
@@ -145,16 +100,6 @@
 <body>
 
 <div class="container">
-    
-    <div class="navigation-bar">
-        <label for="exam-selector">Direkt zur Prüfung:</label>
-        <select id="exam-selector" class="exam-select" onchange="window.location.href=this.value">
-            <option value="index.html" selected>🏠 Startseite (Übersicht)</option>
-            <option value="sommer23.html">Sommer 2023</option>
-            <option value="winter22.html">Winter 2022</option>
-            </select>
-    </div>
-
     <div class="welcome-card">
         <h1>Lineare Algebra I/II</h1>
         <div class="subtitle">Interaktiver Prüfungstrainer der ETH Zürich</div>
@@ -164,6 +109,7 @@
         </p>
 
         <div class="exam-grid">
+            
             <a href="sommer23.html" class="exam-btn">
                 <div class="icon">☀️</div>
                 <div class="exam-title">Sommer 2023</div>
@@ -175,15 +121,33 @@
                 <div class="exam-title">Winter 2022</div>
                 <div class="exam-meta">20 Multiple-Choice Fragen</div>
             </a>
-            
+
+            <a href="winter21.html" class="exam-btn">
+                <div class="icon">❄️</div>
+                <div class="exam-title">Winter 2021</div>
+                <div class="exam-meta">20 Multiple-Choice Fragen</div>
+            </a>
+
+            <a href="winter20.html" class="exam-btn">
+                <div class="icon">❄️</div>
+                <div class="exam-title">Winter 2020</div>
+                <div class="exam-meta">20 Multiple-Choice Fragen</div>
+            </a>
+
+            <a href="sommer20.html" class="exam-btn">
+                <div class="icon">☀️</div>
+                <div class="exam-title">Sommer 2020</div>
+                <div class="exam-meta">20 Multiple-Choice Fragen</div>
+            </a>
+
             <a href="#" class="exam-btn" style="opacity: 0.5; cursor: default;" onclick="return false;">
                 <div class="icon">🔜</div>
                 <div class="exam-title">Weitere Prüfungen</div>
                 <div class="exam-meta">Kommen bald...</div>
             </a>
+            
         </div>
     </div>
-
 </div>
 
 </body>

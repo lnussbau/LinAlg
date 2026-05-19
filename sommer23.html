@@ -42,26 +42,25 @@
             margin: 0 auto;
         }
 
-        .navigation-bar {
-            text-align: center;
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 18px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
             margin-bottom: 25px;
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
-        .exam-select {
-            padding: 10px 15px;
-            font-size: 1.05rem;
-            border-radius: 6px;
-            border: 2px solid var(--primary-color);
-            background-color: white;
-            color: var(--text-color);
-            cursor: pointer;
-            font-weight: 600;
-            outline: none;
+        .btn-back:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(-3px);
         }
 
         h1 {
@@ -223,22 +222,19 @@
 
 <div class="container">
     
-    <div class="navigation-bar">
-        <label for="exam-selector" style="font-weight: bold; margin-right: 10px;">Prüfung wechseln:</label>
-        <select id="exam-selector" class="exam-select" onchange="window.location.href=this.value">
-            <option value="sommer23.html" selected>Sommer 2023</option>
-        </select>
-    </div>
+    <a href="index.html" class="btn-back">
+        ⬅ Zurück zur Startseite
+    </a>
 
     <h1>Lineare Algebra I/II</h1>
-    <div class="subtitle">Prüfung Sommer 2023 (16.08.2023) - Multiple Choice</div>
+    <div class="subtitle">Prüfung Sommer 2023 - Multiple Choice</div>
     
     <div class="sticky-header">
         <div class="progress-container">
             <div class="progress-bar" id="global-progress"></div>
         </div>
         <div class="progress-text">
-            <span id="checked-counter">0 von X Fragen gelöst</span>
+            <span id="checked-counter">0 von 20 Fragen gelöst</span>
             <span id="correct-counter" style="color: var(--success-color);">Richtig: 0 (0%)</span>
         </div>
     </div>
@@ -282,7 +278,7 @@
                 "$a = 1$"
             ],
             correct: 2,
-            explanation: "Die korrekte Lösung lautet $a = -1/3$. Das Gauss-Verfahren liefert als Verträglichkeitsbedingung in der letzten Zeile $0 = -1 - 3a$. Aufgelöst nach $a$ ergibt das $-1/3$. <i>(Hinweis: In der Originalprüfung steht 'Die korrekte Lösung ist A', aber die Rechnung ergibt $-1/3$, was der Option C entspricht.)</i>"
+            explanation: "Die korrekte Lösung lautet $a = -1/3$. Das Gauss-Verfahren liefert als Verträglichkeitsbedingung in der letzten Zeile $0 = -1 - 3a$. Aufgelöst nach $a$ ergibt das $-1/3$."
         },
         {
             id: 4,
@@ -294,7 +290,7 @@
                 "$\\det(-A) = \\det A$."
             ],
             correct: 0,
-            explanation: "Die korrekte Lösung ist A: Es gilt nämlich $1 = \\det(I) = \\det(AA^T) = \\det A \\cdot \\det(A^T) = (\\det A)^2$. Daraus folgt $\\det A = \\pm 1$. Die anderen Optionen gelten im Allgemeinen nicht (beachte z.B., dass $\\det(-A) = (-1)^n \\det A$)."
+            explanation: "Die korrekte Lösung ist A: Es gilt nämlich $1 = \\det(I) = \\det(AA^T) = \\det A \\cdot \\det(A^T) = (\\det A)^2$. Daraus folgt $\\det A = \\pm 1$."
         },
         {
             id: 5,
@@ -342,7 +338,7 @@
                 "1, 0"
             ],
             correct: 1,
-            explanation: "Die korrekte Lösung ist B: Die Eigenwerte von $A^T$ und von $A$ stimmen stets überein. Entwickelt man die Determinante von $A - \\lambda I$ nach der zweiten Spalte, erhält man als charakteristisches Polynom $\\lambda^2(2 - \\lambda) = 0$. Die Eigenwerte sind somit 0 und 2 (wobei 0 die Vielfachheit 2 hat)."
+            explanation: "Die korrekte Lösung ist B: Die Eigenwerte von $A^T$ und von $A$ stimmen stets überein. Entwickelt man die Determinante von $A - \\lambda I$ nach der zweiten Spalte, erhält man als charakteristisches Polynom $\\lambda^2(2 - \\lambda) = 0$. Die Eigenwerte sind somit 0 und 2."
         },
         {
             id: 9,
@@ -354,7 +350,7 @@
                 "$\\begin{pmatrix}y&0&0\\\\ 0&x+2z&0\\\\ 0&0&x-y+2z\\end{pmatrix}$"
             ],
             correct: 0,
-            explanation: "Die korrekte Lösung ist A: Die Spalten der Darstellungsmatrix sind die Bilder der Standardbasisvektoren. $f(e_1) = (0, 1, 1)^T$, $f(e_2) = (1, 0, -1)^T$ und $f(e_3) = (0, 2, 2)^T$. Aneinandergereiht ergibt dies exakt Matrix A."
+            explanation: "Die korrekte Lösung ist A: Die Spalten der Darstellungsmatrix sind die Bilder der Standardbasisvektoren. $f(e_1) = (0, 1, 1)^T$, $f(e_2) = (1, 0, -1)^T$ und $f(e_3) = (0, 2, 2)^T$."
         },
         {
             id: 10,
@@ -378,7 +374,7 @@
                 "$(-2, 1, -1)^T$"
             ],
             correct: 2,
-            explanation: "Die korrekte Lösung ist C: Berechnet man das Skalarprodukt von $(-2, 1, 1)^T$ mit den beiden Vektoren, ergibt sich $(-2)(1) + (1)(1) + (1)(1) = 0$ und $(-2)(-1) + (1)(0) + (1)(-2) = 0$. Alternativ kann man das Vektorprodukt $v_1 \\times v_2 = (-2, 1, 1)^T$ berechnen."
+            explanation: "Die korrekte Lösung ist C: Berechnet man das Skalarprodukt von $(-2, 1, 1)^T$ mit den beiden Vektoren, ergibt sich $(-2)(1) + (1)(1) + (1)(1) = 0$ und $(-2)(-1) + (1)(0) + (1)(-2) = 0$."
         },
         {
             id: 12,
@@ -390,7 +386,7 @@
                 "$(1, 1, 1)^T$"
             ],
             correct: 3,
-            explanation: "Die richtige Lösung ist D: Ein Vektor $v$ ist ein Eigenvektor, wenn $Av = \\lambda v$ gilt. Multipliziert man $A$ mit $(1, 1, 1)^T$, erhält man $(2, 1, 1)^T$. Das ist kein Vielfaches von $(1, 1, 1)^T$. Die Vektoren in A und B ergeben den Nullvektor (Eigenwert 0), Vektor C ergibt den Nullvektor (Eigenwert 0)."
+            explanation: "Die richtige Lösung ist D: Nur dieser Vektor erfüllt die Eigenwertgleichung $Ax = \\lambda x$ nicht."
         },
         {
             id: 13,
@@ -406,7 +402,7 @@
         },
         {
             id: 14,
-            question: "Welchen Wert hat die Determinante $\\det \\begin{pmatrix}1&2&3&4\\\\ 3&4&5&6\\\\ 0&0&1+a&a\\\\ 0&0&-a&1-a\\end{pmatrix}$? (Hinweis: Verwenden Sie den Blocksatz.)",
+            question: "Welchen Wert hat die Determinante $\\det \\begin{pmatrix}1&2&3&4\\\\ 3&4&5&6\\\\ 0&0&1+a&a\\\\ 0&0&-a&1-a\\end{pmatrix}$?",
             options: [
                 "2",
                 "-2",
@@ -414,7 +410,7 @@
                 "$-2(1+2a)$"
             ],
             correct: 1,
-            explanation: "Die korrekte Lösung ist B: Mit der Blockmatrizen-Formel für Dreiecksblöcke berechnet sich die Determinante als Produkt der Determinanten der Diagonalblöcke: $\\det\\begin{pmatrix}1&2\\\\3&4\\end{pmatrix} \\cdot \\det\\begin{pmatrix}1+a&a\\\\-a&1-a\\end{pmatrix} = (4-6) \\cdot ((1+a)(1-a) + a^2) = -2 \\cdot (1-a^2+a^2) = -2 \\cdot 1 = -2$."
+            explanation: "Die korrekte Lösung ist B: Mit der Blockmatrizen-Formel für Dreiecksblöcke berechnet sich die Determinante als Produkt der Determinanten der Diagonalblöcke."
         },
         {
             id: 15,
@@ -426,7 +422,7 @@
                 "Wenn $\\det A = 0$, dann ist $A^2$ die Nullmatrix."
             ],
             correct: 1,
-            explanation: "Die korrekte Lösung ist B: Es gilt $(I+A)(I-A) = I^2 - IA + AI - A^2 = I - A^2$. Wenn $A^2 = 0$, ergibt das exakt $I$. Somit sind $(I+A)$ und $(I-A)$ zueinander invers."
+            explanation: "Die korrekte Lösung ist B: Es gilt $(I+A)(I-A) = I^2 - IA + AI - A^2 = I - A^2$. Wenn $A^2 = 0$, ergibt das exakt $I$."
         },
         {
             id: 16,
@@ -438,7 +434,7 @@
                 "4"
             ],
             correct: 2,
-            explanation: "Die korrekte Lösung ist C: Die Dimension des Bildes entspricht dem Rang der Matrix. Streicht man z.B. die vierte Zeile, bleibt eine $3\\times3$ Matrix, deren Determinante ungleich 0 ist. Somit sind die drei Spalten linear unabhängig und der Rang ist 3."
+            explanation: "Die Dimension des Bildes entspricht dem Rang der Matrix. Die drei Spalten der Matrix sind linear unabhängig, somit ist der Rang 3."
         },
         {
             id: 17,
@@ -450,7 +446,7 @@
                 "$\\begin{pmatrix}2&0\\\\ 3&4\\end{pmatrix}$"
             ],
             correct: 1,
-            explanation: "Die korrekte Lösung ist B: Gesucht ist die Übergangsmatrix von der Standardbasis E in die Basis B. Die Basisvektoren von B in den Spalten $\\begin{pmatrix}2&3\\\\0&4\\end{pmatrix}$ ergeben die Übergangsmatrix von B nach E. Wir suchen die Inverse davon, welche exakt Option B ist."
+            explanation: "Die korrekte Lösung ist B: Wir suchen die Übergangsmatrix von der Standardbasis E in die Basis B, also die Inverse der Übergangsmatrix von B nach E."
         },
         {
             id: 18,
@@ -462,7 +458,7 @@
                 "$((AB)^{-1})^T = (A^{-1})^T (B^{-1})^T$"
             ],
             correct: 3,
-            explanation: "Die korrekte Lösung ist D: Nach den Rechenregeln für Matrizen gilt $(AB)^{-1} = B^{-1} A^{-1}$. Wendet man darauf die Transposition an, dreht sich die Reihenfolge erneut um: $(B^{-1} A^{-1})^T = (A^{-1})^T (B^{-1})^T$."
+            explanation: "Die korrekte Lösung ist D: Nach den Rechenregeln für Matrizen gilt $(AB)^{-1} = B^{-1} A^{-1}$. Wendet man darauf die Transposition an, ergibt das $(A^{-1})^T (B^{-1})^T$."
         },
         {
             id: 19,
@@ -474,7 +470,7 @@
                 "Wenn A einen Eigenwert ungleich Null hat, dann ist A invertierbar."
             ],
             correct: 3,
-            explanation: "Die korrekte Lösung ist D: Diese Aussage ist falsch (und somit die gesuchte Lösung). Eine Matrix kann einen Eigenwert $\\neq 0$ haben, aber gleichzeitig auch den Eigenwert 0 besitzen. Sobald ein Eigenwert 0 ist, ist die Determinante 0 und die Matrix nicht invertierbar."
+            explanation: "Die korrekte Lösung ist D. Eine Matrix kann einen Eigenwert $\\neq 0$ haben, aber gleichzeitig auch den Eigenwert 0. In diesem Fall ist die Determinante 0 und die Matrix nicht invertierbar."
         },
         {
             id: 20,
@@ -486,7 +482,7 @@
                 "$\\begin{pmatrix}0&0\\\\ 16&16\\end{pmatrix}$"
             ],
             correct: 0,
-            explanation: "Die korrekte Lösung ist A: Wir setzen die Basisvektoren ein: $g(e^x) = e^x + 4e^x - 5e^x = 0 = 0\\cdot e^x + 0\\cdot e^{3x}$. Das gibt die erste Spalte $(0, 0)^T$. Für den zweiten Basisvektor: $g(e^{3x}) = 9e^{3x} + 12e^{3x} - 5e^{3x} = 16e^{3x} = 0\\cdot e^x + 16\\cdot e^{3x}$. Das ergibt die zweite Spalte $(0, 16)^T$."
+            explanation: "Die korrekte Lösung ist A: Durch Einsetzen der Basiselemente $e^x$ und $e^{3x}$ ergeben sich die Spalten $(0, 0)^T$ und $(0, 16)^T$."
         }
     ];
 
@@ -516,7 +512,7 @@
         });
 
         card.innerHTML = `
-            <div class="question-header">Aufgabe 1.MC${index + 1}</div>
+            <div class="question-header">Aufgabe ${index + 1}</div>
             <div class="question-text">${q.question}</div>
             <ul class="options-list">
                 ${optionsHtml}
