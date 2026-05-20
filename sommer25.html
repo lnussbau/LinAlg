@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinAlg Prüfung - Sommer 2025</title>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --success-bg: #e8f8f0;
+            --error-color: #e74c3c;
+            --error-bg: #fdedec;
+            --background-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 18px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            margin-bottom: 25px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .btn-back:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(-3px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background-color: var(--background-color);
+            padding: 10px 0 20px 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .progress-container {
+            background-color: #dcdde1;
+            border-radius: 10px;
+            height: 18px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            background-color: var(--success-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+
+        .question-header {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #34495e;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f1f2f6;
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+        }
+
+        .options-list {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .options-list li {
+            margin-bottom: 12px;
+        }
+
+        .options-list label {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .options-list label:hover {
+            background-color: #f1f2f6;
+            border-color: #b2bec3;
+        }
+
+        .options-list input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .correct-answer {
+            background-color: var(--success-bg) !important;
+            border-color: var(--success-color) !important;
+            color: #1e7e34 !important;
+            font-weight: 600;
+        }
+
+        .wrong-answer {
+            background-color: var(--error-bg) !important;
+            border-color: var(--error-color) !important;
+            color: #bd2130 !important;
+            font-weight: 600;
+        }
+
+        .btn-check {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-check:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-check:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .explanation-box {
+            display: none;
+            margin-top: 20px;
+            padding: 15px 20px;
+            background-color: #eaf2f8;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 4px;
+            font-size: 0.98rem;
+        }
+
+        .explanation-title {
+            font-weight: 700;
+            color: #2980b9;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <a href="index.html" class="btn-back">
+        ⬅ Zurück zur Startseite
+    </a>
+
+    <h1>Lineare Algebra I/II</h1>
+    <div class="subtitle">Prüfung Sommer 2025 - Multiple Choice</div>
+    
+    <div class="sticky-header">
+        <div class="progress-container">
+            <div class="progress-bar" id="global-progress"></div>
+        </div>
+        <div class="progress-text">
+            <span id="checked-counter">0 von 25 Fragen gelöst</span>
+            <span id="correct-counter" style="color: var(--success-color);">Richtig: 0 (0%)</span>
+        </div>
+    </div>
+
+    <div id="quiz-container"></div>
+</div>
+
+<script>
+    const quizQuestions = [
+        {
+            id: 1,
+            question: "Betrachten Sie das folgende lineare Gleichungssystem mit dem Parameter $a \\in \\mathbb{R}$:<br>$ax + 2y = 1$<br>$2x + ay = 1$<br>Welche Aussage ist richtig?",
+            options: [
+                "Im Fall a = -2 gibt es genau eine Lösung.",
+                "Falls a = 3 gibt es unendlich viele Lösungen.",
+                "Für jedes a > 0 hat das Gleichungssystem mindestens eine Lösung."
+            ],
+            correct: 2,
+            explanation: "Die Determinante der Koeffizientenmatrix ist $\\det(A) = a^2 - 4$. Das System hat eine eindeutige Lösung, solange $a \\neq \\pm 2$. Für positive $a$ wird die Determinante nur bei $a=2$ null. Für $a=2$ lauten die Gleichungen $2x+2y=1$ und $2x+2y=1$, was offensichtlich (unendlich viele) Lösungen hat. Daher hat das LGS für *jedes* $a > 0$ mindestens eine Lösung."
+        },
+        {
+            id: 2,
+            question: "Seien A, B zwei $2\\times2$-Matrizen. Sei A invertierbar und v ein Eigenvektor sowohl von A als auch von B. Welche Aussage ist im Allgemeinen <b>falsch</b>?",
+            options: [
+                "Die Matrix $A^{-1} + B$ besitzt den Eigenvektor v.",
+                "Die Matrix $A^{-1}B$ besitzt den Eigenvektor v.",
+                "v ist kein Eigenvektor von $e^A$."
+            ],
+            correct: 2,
+            explanation: "Wenn $v$ ein Eigenvektor von A zum Eigenwert $\\lambda$ ist, so ist $v$ zwingend auch ein Eigenvektor der Matrix-Exponentialfunktion $e^A$ zum Eigenwert $e^\\lambda$. Die Aussage, dass $v$ *kein* Eigenvektor von $e^A$ sei, ist somit in jedem Fall falsch."
+        },
+        {
+            id: 3,
+            question: "Seien A und B orthogonale Matrizen. Welche Aussage ist im Allgemeinen wahr?",
+            options: [
+                "A + B ist orthogonal.",
+                "$AB^{-1}$ ist nicht orthogonal.",
+                "$AA^T = B^TB$."
+            ],
+            correct: 2,
+            explanation: "Für jede orthogonale Matrix gilt per Definition $M M^T = M^T M = I$. Da sowohl A als auch B orthogonal sind, gilt $AA^T = I$ und $B^TB = I$. Daraus folgt logischerweise $AA^T = B^TB$ (da beide gleich der Einheitsmatrix $I$ sind)."
+        },
+        {
+            id: 4,
+            question: "Betrachten Sie die Matrix $A = \\begin{pmatrix}0 & 4 & 0 & 1\\\\ 3 & 0 & 2 & 0\\\\ 3 & 0 & 0 & 1\\\\ 0 & 4 & 2 & 1\\end{pmatrix}$. Welchen Wert hat die Determinante von A?",
+            options: [
+                "-12",
+                "-24",
+                "24"
+            ],
+            correct: 2,
+            explanation: "Mittels Laplace-Entwicklung oder Zeilenumformungen: Zieht man Zeile 2 von Zeile 3 ab, erhält man neue Nullen, was die Berechnung vereinfacht. Berechnet man die Determinante schrittweise, ergibt sich am Ende exakt der Wert 24."
+        },
+        {
+            id: 5,
+            question: "Betrachten Sie die Matrix $A = \\begin{pmatrix}1 & a & 0\\\\ 2 & 3 & 1\\\\ 0 & 7 & 1\\end{pmatrix}$ mit Parameter $a \\in \\mathbb{R}$. Welche Aussage ist richtig?",
+            options: [
+                "A ist für jede Wahl von a regulär.",
+                "A ist singulär für a = 8.",
+                "A ist singulär für a = -2."
+            ],
+            correct: 2,
+            explanation: "Die Determinante von A wird per Sarrus-Regel oder Laplace berechnet: $\\det(A) = 1(3\\cdot1 - 1\\cdot7) - a(2\\cdot1 - 0) + 0 = -4 - 2a$. Eine Matrix ist singulär, wenn ihre Determinante 0 ist. Das ist der Fall für $-4 - 2a = 0 \\Rightarrow 2a = -4 \\Rightarrow a = -2$."
+        },
+        {
+            id: 6,
+            question: "Sei $P_2$ der $\\mathbb{R}$-Vektorraum der Polynome vom Grad $\\le 2$. Betrachte $F: p(x) \\mapsto 2p(x) + p'(x) + p''(x)$. Welche Aussage ist wahr?",
+            options: [
+                "F ist keine lineare Abbildung.",
+                "F hat den Eigenwert 2 mit algebraischer Vielfachheit 2.",
+                "F ist invertierbar."
+            ],
+            correct: 2,
+            explanation: "Die Darstellungsmatrix von F bezüglich der Basis $\\{1, x, x^2\\}$ ist eine obere Dreiecksmatrix, die auf der Hauptdiagonale überall den Wert 2 hat. Die Determinante ist somit $2^3 = 8 \\neq 0$. Da die Determinante ungleich 0 ist, ist die lineare Abbildung F invertierbar."
+        },
+        {
+            id: 7,
+            question: "Welche der folgenden Matrizen ist <b>nicht</b> diagonalisierbar?",
+            options: [
+                "$\\begin{pmatrix}4 & 1\\\\ 1 & 4\\end{pmatrix}$",
+                "$\\begin{pmatrix}4 & 1\\\\ 0 & 2\\end{pmatrix}$",
+                "$\\begin{pmatrix}3 & 0\\\\ 1 & 3\\end{pmatrix}$"
+            ],
+            correct: 2,
+            explanation: "Die Matrix (C) hat den doppelten Eigenwert $\\lambda = 3$ (algebraische Vielfachheit 2). Der Eigenraum dazu wird bestimmt durch $\\ker(A - 3I) = \\ker\\begin{pmatrix}0 & 0\\\\ 1 & 0\\end{pmatrix}$. Dieser Kern ist nur 1-dimensional. Da geometrische Vielfachheit (1) < algebraische Vielfachheit (2), ist sie nicht diagonalisierbar."
+        },
+        {
+            id: 8,
+            question: "Betrachten Sie den Vektorraum F der reellen Funktionen $\\mathbb{R} \\rightarrow \\mathbb{R}$. Welche Aussage ist wahr?",
+            options: [
+                "Die Abbildung $\\langle f, g\\rangle := f(0)g(0)$ ist ein Skalarprodukt.",
+                "Die Abbildung $B(f) = \\int_0^1 f(x)^2 dx$ ist linear.",
+                "Die beiden Funktionen $f(x) = e^x$ und $g(x) = e^{2x}$ sind linear unabhängig."
+            ],
+            correct: 2,
+            explanation: "Exponentialfunktionen mit unterschiedlichen Vorfaktoren im Exponenten sind stets linear unabhängig voneinander. Option A scheitert an der Definitheit (eine Funktion kann $f(0)=0$ haben, ohne die Nullfunktion zu sein), Option B ist wegen des Quadrats offensichtlich nicht linear."
+        },
+        {
+            id: 9,
+            question: "Welche der folgenden Matrizen ist die Adjunkte der Matrix $A = \\begin{pmatrix}1 & 2 & 1\\\\ 0 & 1 & 1\\\\ 1 & 3 & 2\\end{pmatrix}$?",
+            options: [
+                "$\\begin{pmatrix}-1 & -1 & 1\\\\ 1 & 1 & -1\\\\ 1 & 0 & 1\\end{pmatrix}$",
+                "$\\begin{pmatrix}-1 & -1 & 1\\\\ 1 & 1 & -1\\\\ 0 & 1 & 1\\end{pmatrix}$",
+                "$\\begin{pmatrix}-1 & -1 & 1\\\\ 1 & 1 & -1\\\\ -1 & -1 & 1\\end{pmatrix}$"
+            ],
+            correct: 2,
+            explanation: "Die Adjunkte (oder komplementäre Matrix) ist die Transponierte der Kofaktormatrix. Der Kofaktor $C_{11}$ ist $(-1)^{1+1} \\cdot \\det\\begin{pmatrix}1 & 1\\\\ 3 & 2\\end{pmatrix} = 2-3 = -1$. Berechnet man alle Einträge systematisch, erhält man exakt die Matrix in Option (C)."
+        },
+        {
+            id: 10,
+            question: "Gegeben seien $v_1 = (1, 0, 1, 2)^T$, $v_2 = (2, \\alpha, 2, 4)^T$, $v_3 = (3, \\alpha, \\beta, 6)^T$. Welche Aussage über $U = \\operatorname{span}\\{v_1, v_2, v_3\\}$ ist <b>falsch</b>?",
+            options: [
+                "U kann bei geeigneter Wahl von $\\alpha, \\beta$ die Dimension 2 oder 3 annehmen.",
+                "Für $\\beta=3$ sind die drei Vektoren für jeden Wert von $\\alpha$ linear abhängig.",
+                "Für $\\alpha=0$ sind $v_1, v_2, v_3$ für jede Wahl von $\\beta$ linear unabhängig."
+            ],
+            correct: 2,
+            explanation: "Die Aussage C ist falsch (und daher die korrekte Antwort): Setzt man $\\alpha = 0$, so wird $v_2 = (2, 0, 2, 4)^T$. Man erkennt sofort, dass $v_2$ exakt das Doppelte von $v_1$ ist ($v_2 = 2v_1$). Die Vektoren sind damit *immer* linear abhängig, völlig egal, welchen Wert $\\beta$ annimmt."
+        },
+        {
+            id: 11,
+            question: "Gegeben ist der Vektor $v = (2, 3, -1)^T$ und die Basis $B = \\{ (1,1,-1)^T, (1,0,-1)^T, (1,1,0)^T \\}$. Wie lautet der Koordinatenvektor $[v]_B$?",
+            options: [
+                "$(2, 3, -1)^T$",
+                "$(-2, 1, -1)^T$",
+                "$(2, -1, 1)^T$"
+            ],
+            correct: 2,
+            explanation: "Der Koordinatenvektor gibt an, wie man $v$ aus den Basisvektoren mischt. Wir prüfen Option (C): $2 \\cdot (1,1,-1)^T - 1 \\cdot (1,0,-1)^T + 1 \\cdot (1,1,0)^T = (2-1+1, 2-0+1, -2+1+0)^T = (2, 3, -1)^T$. Das ergibt exakt $v$, somit ist (C) korrekt."
+        },
+        {
+            id: 12,
+            question: "Gegeben seien zwei Vektoren $u, v \\in \\mathbb{R}^n$. Welche Aussage ist korrekt?",
+            options: [
+                "Für die euklidische Norm gilt immer $\\|u\\|_2 = \\max |u_i|$.",
+                "Für die 1-Norm gilt immer $\\|u+v\\|_1^2 + \\|u-v\\|_1^2 = 2(\\|u\\|_1^2 + \\|v\\|_1^2)$.",
+                "Für die Maximumsnorm gilt immer $\\|u+v\\|_\\infty \\le \\|u\\|_\\infty + \\|v\\|_\\infty$."
+            ],
+            correct: 2,
+            explanation: "Aussage C ist die Dreiecksungleichung. Da die Maximumsnorm eine gültige Norm ist, muss für sie zwingend die Dreiecksungleichung gelten. Option A beschreibt nicht die euklidische, sondern die Maximumsnorm. Option B ist die Parallelogrammgleichung, welche nur für von einem Skalarprodukt induzierte Normen (wie die 2-Norm) gilt, nicht aber für die 1-Norm."
+        },
+        {
+            id: 13,
+            question: "Betrachten Sie die quadratische Form $Q(x, y) = x^2 + 2xy + y^2$. Welche der folgenden Aussagen ist <b>falsch</b>?",
+            options: [
+                "Die zugehörige symmetrische Matrix hat genau zwei verschiedene Eigenwerte.",
+                "Die zugehörige symmetrische Matrix ist orthogonal diagonalisierbar.",
+                "Die zugehörige symmetrische Matrix hat vollen Rang."
+            ],
+            correct: 2,
+            explanation: "Die zugehörige symmetrische Matrix ist $A = \\begin{pmatrix}1 & 1\\\\ 1 & 1\\end{pmatrix}$. Man sieht sofort, dass die zweite Zeile identisch zur ersten ist. Die Zeilen sind linear abhängig, die Determinante ist 0. Die Matrix hat also Rang 1 und somit *nicht* vollen Rang. Aussage (C) ist falsch."
+        },
+        {
+            id: 14,
+            question: "Gegeben sei das homogene LGS:<br>$2x + 3y - z + w = 0$<br>$x - y + 2z - 3w = 0$<br>Welche Menge ist ein Erzeugendensystem des Lösungsraumes?",
+            options: [
+                "$\\{(7, -6, 1, 5)^T\\}$",
+                "$\\{(2, 3, -1, 1)^T, (7, -6, 1, 5)^T\\}$",
+                "$\\{(-1, 1, 1, 0)^T, (8, -7, 0, 5)^T, (7, -6, 1, 5)^T\\}$"
+            ],
+            correct: 2,
+            explanation: "Das LGS besteht aus 4 Variablen und 2 linear unabhängigen Gleichungen. Der Lösungsraum hat nach dem Rangsatz Dimension $4 - 2 = 2$. Ein Erzeugendensystem muss also den gesamten 2-dimensionalen Raum aufspannen (mindestens 2 lin. unabh. Vektoren, die das LGS lösen). Setzt man die drei Vektoren aus (C) in das LGS ein, sieht man, dass alle drei das System lösen und zusammen den Lösungsraum aufspannen."
+        },
+        {
+            id: 15,
+            question: "Seien A, B invertierbare $n\\times n$-Matrizen und $v \\in \\mathbb{R}^n$. Welche Aussage ist <b>nicht in jedem Fall wahr</b>?",
+            options: [
+                "Das Gleichungssystem $-A^{-4}B^6x = v$ ist eindeutig lösbar.",
+                "$(A^3B^{-1})^T = (B^T)^{-1}(A^T)^3$",
+                "Die Matrix $2A + 3B$ ist invertierbar."
+            ],
+            correct: 2,
+            explanation: "Die Summe zweier invertierbarer Matrizen ist im Allgemeinen nicht zwingend invertierbar. Wählt man beispielsweise $A = I$ und $B = -\\frac{2}{3}I$, so sind beide invertierbar. Jedoch ist $2A + 3B = 2I - 2I = 0$ (die Nullmatrix), welche ganz sicher nicht invertierbar ist."
+        },
+        {
+            id: 16,
+            question: "Gegeben sei das lineare Gleichungssystem mit Parameter k:<br>$x + y + z = 1$<br>$x + 2y + 3z = 2$<br>$3x + 4y + kz = 4$<br>Welche Aussage ist wahr?",
+            options: [
+                "Der Rang der Koeffizientenmatrix ist unabhängig vom Wert k.",
+                "Das Gleichungssystem ist für k = 3 nicht lösbar.",
+                "Für den Fall k = 5 besitzt das Gleichungssystem unendlich viele Lösungen."
+            ],
+            correct: 2,
+            explanation: "Wir wenden den Gauss-Algorithmus an. Zieht man entsprechende Vielfache der 1. und 2. Zeile von der 3. Zeile ab, erhält man als letzte Zeile $(0, 0, k-5 \\mid 0)$. Für $k = 5$ entsteht eine Nullzeile ($0 = 0$). Es gibt also einen Freiheitsgrad (Variable z frei wählbar), was unendlich viele Lösungen bedeutet."
+        },
+        {
+            id: 17,
+            question: "Betrachten Sie die $4\\times4$-Matrix A, bei der $a_{ij}$ gegeben ist als:<br> Zeile 1: 1 2 3 4<br> Zeile 2: 2 2 3 4<br> Zeile 3: 3 3 3 4<br> Zeile 4: 4 4 4 4<br>Dann ist $\\det(A) =$",
+            options: [
+                "0",
+                "4",
+                "-4"
+            ],
+            correct: 2,
+            explanation: "Mittels elementarer Zeilenoperationen lässt sich A vereinfachen. Subtrahiert man Zeile 3 von Zeile 4, Zeile 2 von 3, und Zeile 1 von 2, entsteht eine Matrix, deren Determinante sich leicht berechnen lässt. Das Endergebnis ist exakt -4."
+        },
+        {
+            id: 18,
+            question: "Welche der folgenden Aussagen über reelle Vektorräume ist <b>falsch</b>?",
+            options: [
+                "Der Vektorraum der Polynome vom Grad $\\le n$ ist n+1-dimensional.",
+                "Die Menge der reellen $m \\times n$-Matrizen ist ein Vektorraum der Dimension $m \\cdot n$.",
+                "Der Vektorraum der stetigen Funktionen von $\\mathbb{R}$ nach $\\mathbb{R}$ ist endlich-dimensional."
+            ],
+            correct: 2,
+            explanation: "Der Raum der stetigen Funktionen $C(\\mathbb{R})$ ist unendlich-dimensional. Er enthält beispielsweise sämtliche Polynomfunktionen beliebigen Grades ($1, x, x^2, x^3, \\dots$) sowie e-Funktionen und trigonometrische Funktionen. Sie bilden keine endliche Basis. Aussage (C) ist somit falsch."
+        },
+        {
+            id: 19,
+            question: "Betrachten Sie das Differentialgleichungssystem $Y' = AY$ mit $A = \\begin{pmatrix}1 & 2\\\\ 3 & 2\\end{pmatrix}$. Welcher Ausdruck stellt die allgemeine Lösung Y(t) dar?",
+            options: [
+                "$Y(t) = C_1e^{4t}\\begin{pmatrix}1\\\\ -1\\end{pmatrix} + C_2e^{-t}\\begin{pmatrix}2\\\\ 3\\end{pmatrix}$",
+                "$Y(t) = C_1e^{-4t}\\begin{pmatrix}2\\\\ 3\\end{pmatrix} + C_2e^{t}\\begin{pmatrix}1\\\\ -1\\end{pmatrix}$",
+                "$Y(t) = C_1e^{4t}\\begin{pmatrix}2\\\\ 3\\end{pmatrix} + C_2e^{-t}\\begin{pmatrix}1\\\\ -1\\end{pmatrix}$"
+            ],
+            correct: 2,
+            explanation: "Das charakteristische Polynom lautet $\\det(A-\\lambda I) = (1-\\lambda)(2-\\lambda) - 6 = \\lambda^2 - 3\\lambda - 4 = (\\lambda-4)(\\lambda+1) = 0$. Die Eigenwerte sind $\\lambda = 4$ und $\\lambda = -1$. Der Eigenvektor zu $\\lambda=4$ ist $(2,3)^T$. Der Eigenvektor zu $\\lambda=-1$ ist $(1,-1)^T$. Das entspricht exakt Option (C)."
+        },
+        {
+            id: 20,
+            question: "Seien A und B zwei ähnliche $n\\times n$-Matrizen. Welche Aussage ist im Allgemeinen <b>falsch</b>?",
+            options: [
+                "A und B haben die gleiche Spur.",
+                "A und B haben die gleichen Eigenwerte.",
+                "A und B haben die gleichen Eigenvektoren."
+            ],
+            correct: 2,
+            explanation: "Ähnliche Matrizen stellen dieselbe lineare Abbildung bezüglich verschiedener Basen dar. Sie teilen Invarianten wie Determinante, Spur und Eigenwerte. Die Eigenvektoren ändern sich jedoch bei dem Basiswechsel ($v_B = T^{-1}v_A$). Daher ist Aussage C falsch."
+        },
+        {
+            id: 21,
+            question: "Gegeben sei $\\langle A, B\\rangle = \\operatorname{spur}(A^TB)$. Matrizen: $U = \\begin{pmatrix}1 & 2\\\\ 3 & 4\\end{pmatrix}$, $V = \\begin{pmatrix}1/\\sqrt{2} & 0\\\\ 0 & 1/\\sqrt{2}\\end{pmatrix}$. Die orthogonale Projektion von U auf V ist:",
+            options: [
+                "$\\begin{pmatrix}1 & 3\\\\ 2 & 4\\end{pmatrix}$",
+                "$\\begin{pmatrix}1/\\sqrt{2} & 0\\\\ 0 & 1/\\sqrt{2}\\end{pmatrix}$",
+                "$\\begin{pmatrix}5/2 & 0\\\\ 0 & 5/2\\end{pmatrix}$"
+            ],
+            correct: 2,
+            explanation: "Die Projektion ist $P = \\frac{\\langle U, V\\rangle}{\\langle V, V\\rangle} V$. Zuerst: $\\langle V, V\\rangle = (1/\\sqrt{2})^2 + (1/\\sqrt{2})^2 = 1/2 + 1/2 = 1$. Dann $\\langle U, V\\rangle = \\operatorname{spur}\\left(\\begin{pmatrix}1 & 3\\\\ 2 & 4\\end{pmatrix} \\begin{pmatrix}1/\\sqrt{2} & 0\\\\ 0 & 1/\\sqrt{2}\\end{pmatrix}\\right) = 1/\\sqrt{2} + 4/\\sqrt{2} = 5/\\sqrt{2}$. Dann ist $P = \\frac{5}{\\sqrt{2}} V = \\begin{pmatrix}5/2 & 0\\\\ 0 & 5/2\\end{pmatrix}$."
+        },
+        {
+            id: 22,
+            question: "Gegeben sei $A = \\begin{pmatrix}2 & 1\\\\ 0 & 2\\end{pmatrix}$. Welche Aussage über A ist wahr?",
+            options: [
+                "A ist einfach.",
+                "A ist halbeinfach, aber nicht einfach.",
+                "A ist nicht halbeinfach."
+            ],
+            correct: 2,
+            explanation: "'Halbeinfach' bedeutet diagonalisierbar. 'Einfach' bedeutet lauter verschiedene Eigenwerte. A ist ein Jordan-Block zum Eigenwert 2 (algebraische Vielfachheit 2). Der Eigenraum hat jedoch nur Dimension 1. A ist somit nicht diagonalisierbar und folglich 'nicht halbeinfach'."
+        },
+        {
+            id: 23,
+            question: "Welche der folgenden Mengen W ist ein Unterraum des angegebenen reellen Vektorraums V?",
+            options: [
+                "V = $P_2$, $W = \\{p(x) \\in P_2 \\mid p(-1) \\neq p(1)\\}$",
+                "V = $\\mathbb{R}^2$, $W = \\{ (x,y)^T \\in \\mathbb{R}^2 \\mid y = x^2 \\}$",
+                "V = $\\mathbb{R}^3$, $W = \\{ (x,y,z)^T \\in \\mathbb{R}^3 \\mid 2x - 3y + 4z = 0 \\}$"
+            ],
+            correct: 2,
+            explanation: "Die Menge W in Option (C) ist definiert durch eine homogene lineare Gleichung in drei Variablen. Solche Mengen beschreiben Ursprungsebenen und sind klassische Untervektorräume, da sie additiv abgeschlossen sind und den Nullvektor enthalten. (Option A scheitert am Nullvektor, Option B ist eine Parabel und nicht linear)."
+        },
+        {
+            id: 24,
+            question: "Welche Aussage über quadratische $n\\times n$-Matrizen ist im Allgemeinen wahr?",
+            options: [
+                "Wenn $A^T = A$ und $B^T = B$, dann ist $(AB)^T = AB$.",
+                "Wenn $A^2 = -4A$ und A invertierbar ist, dann ist $\\det(A) = -4$.",
+                "Wenn $A^7 = 0$, dann ist $\\det(A) = 0$."
+            ],
+            correct: 2,
+            explanation: "Nach dem Determinantenmultiplikationssatz gilt $\\det(A^7) = \\det(A)^7$. Wenn $A^7$ die Nullmatrix ist, ist $\\det(A^7) = 0$. Daraus folgt zwingend $\\det(A)^7 = 0$, was wiederum nur möglich ist, wenn $\\det(A) = 0$. Aussage C ist also immer wahr."
+        },
+        {
+            id: 25,
+            question: "Die Operatornorm (2-Norm) der Matrix $A = \\begin{pmatrix}1 & 2\\\\ 2 & 1\\end{pmatrix}$ bezüglich der euklidischen Norm ist:",
+            options: [
+                "1",
+                "2",
+                "3"
+            ],
+            correct: 2,
+            explanation: "Für eine symmetrische Matrix entspricht die Operatornorm (2-Norm) dem größten absoluten Eigenwert. Das charakteristische Polynom ist $(1-\\lambda)^2 - 4 = 0$, woraus $\\lambda - 1 = \\pm 2$ folgt. Die Eigenwerte sind somit $\\lambda_1 = 3$ und $\\lambda_2 = -1$. Das Betragsmaximum davon ist 3."
+        }
+    ];
+
+    let totalQuestions = quizQuestions.length;
+    let checkedCount = 0;
+    let correctCount = 0;
+
+    const container = document.getElementById('quiz-container');
+
+    document.getElementById('checked-counter').innerText = `0 von ${totalQuestions} Fragen gelöst`;
+
+    quizQuestions.forEach((q, index) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `card-${q.id}`;
+
+        let optionsHtml = '';
+        q.options.forEach((opt, optIndex) => {
+            optionsHtml += `
+                <li>
+                    <label id="label-${q.id}-${optIndex}">
+                        <input type="radio" name="q${q.id}" value="${optIndex}">
+                        <span>${opt}</span>
+                    </label>
+                </li>
+            `;
+        });
+
+        card.innerHTML = `
+            <div class="question-header">Aufgabe ${index + 1}</div>
+            <div class="question-text">${q.question}</div>
+            <ul class="options-list">
+                ${optionsHtml}
+            </ul>
+            <button type="button" class="btn-check" id="btn-${q.id}" onclick="validateQuestion(${q.id})">Frage prüfen</button>
+            <div class="explanation-box" id="expl-${q.id}">
+                <div class="explanation-title">Erklärung:</div>
+                <div id="expl-text-${q.id}">${q.explanation}</div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    function validateQuestion(qId) {
+        const selectedRadio = document.querySelector(`input[name="q${qId}"]:checked`);
+        
+        if (!selectedRadio) {
+            alert("Bitte wähle zuerst eine Antwort aus!");
+            return;
+        }
+
+        const checkedBtn = document.getElementById(`btn-${qId}`);
+        checkedBtn.disabled = true;
+        checkedBtn.innerText = "Überprüft";
+
+        const radios = document.querySelectorAll(`input[name="q${qId}"]`);
+        radios.forEach(r => r.disabled = true);
+
+        const qData = quizQuestions.find(q => q.id === qId);
+        const selectedValue = parseInt(selectedRadio.value);
+        const correctValue = qData.correct;
+
+        if (selectedValue === correctValue) {
+            document.getElementById(`label-${qId}-${selectedValue}`).classList.add('correct-answer');
+            correctCount++;
+        } else {
+            document.getElementById(`label-${qId}-${selectedValue}`).classList.add('wrong-answer');
+            document.getElementById(`label-${qId}-${correctValue}`).classList.add('correct-answer');
+        }
+
+        document.getElementById(`expl-${qId}`).style.display = 'block';
+
+        checkedCount++;
+        updateGlobalProgress();
+        
+        if (window.MathJax) {
+            MathJax.typesetPromise([document.getElementById(`expl-${qId}`)]);
+        }
+    }
+
+    function updateGlobalProgress() {
+        const percent = (checkedCount / totalQuestions) * 100;
+        document.getElementById('global-progress').style.width = `${percent}%`;
+        document.getElementById('checked-counter').innerText = `${checkedCount} von ${totalQuestions} Fragen gelöst`;
+        
+        const successPercent = checkedCount > 0 ? Math.round((correctCount / checkedCount) * 100) : 0;
+        document.getElementById('correct-counter').innerText = `Richtig: ${correctCount} (${successPercent}%)`;
+    }
+</script>
+
+</body>
+</html>

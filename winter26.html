@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinAlg Prüfung - Winter 2026</title>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --success-bg: #e8f8f0;
+            --error-color: #e74c3c;
+            --error-bg: #fdedec;
+            --background-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 18px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            margin-bottom: 25px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .btn-back:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(-3px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background-color: var(--background-color);
+            padding: 10px 0 20px 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .progress-container {
+            background-color: #dcdde1;
+            border-radius: 10px;
+            height: 18px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            background-color: var(--success-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+
+        .question-header {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #34495e;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f1f2f6;
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+        }
+
+        .options-list {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .options-list li {
+            margin-bottom: 12px;
+        }
+
+        .options-list label {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .options-list label:hover {
+            background-color: #f1f2f6;
+            border-color: #b2bec3;
+        }
+
+        .options-list input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .correct-answer {
+            background-color: var(--success-bg) !important;
+            border-color: var(--success-color) !important;
+            color: #1e7e34 !important;
+            font-weight: 600;
+        }
+
+        .wrong-answer {
+            background-color: var(--error-bg) !important;
+            border-color: var(--error-color) !important;
+            color: #bd2130 !important;
+            font-weight: 600;
+        }
+
+        .btn-check {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-check:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-check:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .explanation-box {
+            display: none;
+            margin-top: 20px;
+            padding: 15px 20px;
+            background-color: #eaf2f8;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 4px;
+            font-size: 0.98rem;
+        }
+
+        .explanation-title {
+            font-weight: 700;
+            color: #2980b9;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <a href="index.html" class="btn-back">
+        ⬅ Zurück zur Startseite
+    </a>
+
+    <h1>Lineare Algebra I/II</h1>
+    <div class="subtitle">Prüfung Winter 2026 - Multiple Choice</div>
+    
+    <div class="sticky-header">
+        <div class="progress-container">
+            <div class="progress-bar" id="global-progress"></div>
+        </div>
+        <div class="progress-text">
+            <span id="checked-counter">0 von 25 Fragen gelöst</span>
+            <span id="correct-counter" style="color: var(--success-color);">Richtig: 0 (0%)</span>
+        </div>
+    </div>
+
+    <div id="quiz-container"></div>
+</div>
+
+<script>
+    const quizQuestions = [
+        {
+            id: 1,
+            question: "Gegeben sei die obere Dreiecksmatrix $A = \\begin{pmatrix}1 & 4 & 7\\\\ 0 & 2 & 5\\\\ 0 & 0 & 3\\end{pmatrix}$. Welche der folgenden Aussagen ist richtig?",
+            options: [
+                "$A^3 + 6A^2 - 11A + 6I = 0$",
+                "$A^3 - 6A^2 + 11A - 6I = 0$",
+                "$A^3 - 5A^2 + 8A - 5I = 0$"
+            ],
+            correct: 1,
+            explanation: "Die Eigenwerte einer Dreiecksmatrix stehen auf der Diagonale: 1, 2 und 3. Das charakteristische Polynom lautet $p_A(\\lambda) = (1-\\lambda)(2-\\lambda)(3-\\lambda) = -\\lambda^3 + 6\\lambda^2 - 11\\lambda + 6 = 0$. Nach dem Satz von Cayley-Hamilton erfüllt jede Matrix ihr eigenes charakteristisches Polynom."
+        },
+        {
+            id: 2,
+            question: "Gegeben sei die Funktion $f(x, y) = -3x^2 - 2y^2 + 6x - 4xy - 5$. Dann ist der kritische Punkt (3, -3)...",
+            options: [
+                "ein Sattelpunkt.",
+                "ein lokales Minimum.",
+                "ein lokales Maximum."
+            ],
+            correct: 2,
+            explanation: "Wir betrachten die Hesse-Matrix: $f_{xx} = -6$, $f_{yy} = -4$, $f_{xy} = -4$. Die Hesse-Matrix ist $H = \\begin{pmatrix}-6 & -4\\\\ -4 & -4\\end{pmatrix}$. Ihre Determinante ist $(-6)(-4) - (-4)^2 = 24 - 16 = 8 > 0$. Da zudem $f_{xx} = -6 < 0$ ist, ist die Matrix negativ definit. Es handelt sich um ein lokales Maximum."
+        },
+        {
+            id: 3,
+            question: "Gegeben ist die Matrix $A = \\begin{pmatrix}k + 2 & 1 & 1\\\\ 1 & k + 2 & 1\\\\ 1 & 1 & k + 2\\end{pmatrix}$. Dann ist die Matrix singulär, wenn k den folgenden Wert annimmt:",
+            options: [
+                "-4",
+                "-2",
+                "3"
+            ],
+            correct: 0,
+            explanation: "Setzt man $k = -4$ ein, erhält man die Matrix $\\begin{pmatrix}-2 & 1 & 1\\\\ 1 & -2 & 1\\\\ 1 & 1 & -2\\end{pmatrix}$. Addiert man hier alle drei Zeilen, erhält man in jeder Spalte 0. Die Zeilen sind linear abhängig, die Matrix ist also singulär (Determinante = 0)."
+        },
+        {
+            id: 4,
+            question: "Gegeben sei die Matrix $A = \\begin{pmatrix}1 & 1\\\\ 0 & 2\\end{pmatrix}$. Welche der folgenden Matrizen B ist ähnlich zu A?",
+            options: [
+                "$B = \\begin{pmatrix}2 & 0\\\\ 0 & 1\\end{pmatrix}$",
+                "$B = \\begin{pmatrix}3 & 0\\\\ 0 & 4\\end{pmatrix}$",
+                "$B = \\begin{pmatrix}1 & 0\\\\ 0 & 1\\end{pmatrix}$"
+            ],
+            correct: 0,
+            explanation: "Zwei ähnliche Matrizen haben exakt dieselben Eigenwerte. Die Matrix A ist eine Dreiecksmatrix, ihre Eigenwerte sind also die Diagonaleinträge 1 und 2. Die Diagonalmatrix B in Option A hat ebenfalls die Eigenwerte 1 und 2. Da beide Eigenwerte verschieden sind, ist A diagonalisierbar und somit zu B ähnlich."
+        },
+        {
+            id: 5,
+            question: "Was ist die Determinante der $6 \\times 6$ Block-Dreiecksmatrix M?",
+            options: [
+                "0",
+                "15",
+                "30"
+            ],
+            correct: 2,
+            explanation: "Die Matrix lässt sich in zwei $3 \\times 3$-Diagonalblöcke unterteilen. Der obere linke Block hat die Determinante $2 \\cdot 3 \\cdot 1 = 6$ (da es eine obere Dreiecksmatrix ist). Der untere rechte Block hat die Determinante $1 \\cdot 1 \\cdot 5 = 5$. Die Gesamtdeterminante ist das Produkt der Blockdeterminanten: $6 \\cdot 5 = 30$."
+        },
+        {
+            id: 6,
+            question: "Gegeben sei das Skalarprodukt $\\langle u, v\\rangle = u_1v_1 + 2u_2v_2$. Welcher Vektor ist die orthogonale Projektion von $a = \\begin{pmatrix}-1\\\\ 5\\end{pmatrix}$ auf $b = \\begin{pmatrix}2\\\\ -1\\end{pmatrix}$?",
+            options: [
+                "$\\begin{pmatrix}1\\\\ 1\\end{pmatrix}$",
+                "$\\begin{pmatrix}6\\\\ -3\\end{pmatrix}$",
+                "$\\begin{pmatrix}-4\\\\ 2\\end{pmatrix}$"
+            ],
+            correct: 2,
+            explanation: "Die Formel für die Projektion lautet $p = \\frac{\\langle a, b\\rangle}{\\langle b, b\\rangle}b$. Wir berechnen $\\langle a, b\\rangle = (-1)(2) + 2(5)(-1) = -2 - 10 = -12$. Und $\\langle b, b\\rangle = (2)(2) + 2(-1)(-1) = 4 + 2 = 6$. Somit ist $p = \\frac{-12}{6} \\cdot b = -2 \\cdot \\begin{pmatrix}2\\\\ -1\\end{pmatrix} = \\begin{pmatrix}-4\\\\ 2\\end{pmatrix}$."
+        },
+        {
+            id: 7,
+            question: "Welche der folgenden Mengen W ist <b>kein</b> Unterraum von $\\mathbb{R}^3$?",
+            options: [
+                "$W = \\{ (x,y,z)^T \\in \\mathbb{R}^3 \\mid xy = 0 \\}$",
+                "$W = \\{ (x,y,z)^T \\in \\mathbb{R}^3 \\mid x + y - z = 0 \\}$",
+                "$W = \\{ (x,y,z)^T \\in \\mathbb{R}^3 \\mid x = 0, y = 0 \\}$"
+            ],
+            correct: 0,
+            explanation: "Die Menge $xy = 0$ bedeutet, dass entweder $x=0$ oder $y=0$ sein muss (die Achsen). Diese Menge ist nicht additiv abgeschlossen. Beispiel: Die Vektoren $(1,0,0)^T$ und $(0,1,0)^T$ liegen in W. Ihre Summe ist $(1,1,0)^T$. Dort ist $xy = 1 \\cdot 1 = 1 \\neq 0$, also liegt die Summe nicht in W."
+        },
+        {
+            id: 8,
+            question: "Gegeben $Y' = AY$ mit $A = \\begin{pmatrix}0 & -1\\\\ 2 & 3\\end{pmatrix}$ und $Y(0) = \\begin{pmatrix}1\\\\ 0\\end{pmatrix}$. Welches ist die korrekte Lösung $Y(t)$?",
+            options: [
+                "$Y(t) = \\begin{pmatrix}e^t + e^{2t}\\\\ e^t - e^{2t}\\end{pmatrix}$",
+                "$Y(t) = \\begin{pmatrix}2e^t - e^{2t}\\\\ -2e^t + 2e^{2t}\\end{pmatrix}$",
+                "$Y(t) = \\begin{pmatrix}2e^{-t} - e^{-2t}\\\\ -2e^{-t} + 2e^{-2t}\\end{pmatrix}$"
+            ],
+            correct: 1,
+            explanation: "Setzen wir $t=0$ in Option B ein, erhalten wir $\\begin{pmatrix}2(1) - 1\\\\ -2(1) + 2(1)\\end{pmatrix} = \\begin{pmatrix}1\\\\ 0\\end{pmatrix}$. Das erfüllt die Anfangsbedingung. (Option A ergibt $\\begin{pmatrix}2\\\\ 0\\end{pmatrix}$, Option C erfüllt ebenfalls die Bedingung, nutzt aber negative Exponenten, was nicht zu den positiven Eigenwerten der Matrix passt)."
+        },
+        {
+            id: 9,
+            question: "Es seien $A, B, C$ $3\\times3$-Matrizen mit $\\det(A) = 2, \\det(B) = 3$ und $\\det(C) = 5$. Dann ist die Determinante von $M = \\frac{1}{2}A A^T B^{-1} A^2 C$ gleich...",
+            options: [
+                "10/3",
+                "50/3",
+                "80/3"
+            ],
+            correct: 0,
+            explanation: "Da M eine $3\\times3$-Matrix ist, gilt für Skalare: $\\det(\\frac{1}{2}X) = (\\frac{1}{2})^3 \\det(X)$. Somit $\\det(M) = \\frac{1}{8} \\cdot \\det(A) \\cdot \\det(A^T) \\cdot \\det(B^{-1}) \\cdot \\det(A)^2 \\cdot \\det(C) = \\frac{1}{8} \\cdot 2 \\cdot 2 \\cdot \\frac{1}{3} \\cdot 2^2 \\cdot 5 = \\frac{1}{8} \\cdot 4 \\cdot \\frac{1}{3} \\cdot 4 \\cdot 5 = \\frac{80}{24} = \\frac{10}{3}$."
+        },
+        {
+            id: 10,
+            question: "Gegeben $A \\in \\mathbb{R}^{2\\times2}$ und $Ax_1 = v_1, Ax_2 = v_2$. Unter welcher Bedingung kann A eindeutig bestimmt werden?",
+            options: [
+                "Wenn $x_1$ und $x_2$ linear abhängig sind.",
+                "A kann in jedem Fall eindeutig bestimmt werden.",
+                "Wenn $v_1$ und $v_2$ linear unabhängig sind."
+            ],
+            correct: 2,
+            explanation: "Damit eine $2\\times2$-Matrix eindeutig durch ihre Bilder bestimmt ist, müssen die Eingangsvektoren ($x_1, x_2$) eine Basis des $\\mathbb{R}^2$ bilden, also linear unabhängig sein. Wenn die Bildvektoren ($v_1, v_2$) linear unabhängig sind, MÜSSEN zwingend auch deren Urbilder ($x_1, x_2$) linear unabhängig sein. (Aussage C ist somit eine hinreichende Bedingung)."
+        },
+        {
+            id: 11,
+            question: "Gegeben sei $A = \\begin{pmatrix}3 & 1\\\\ 4 & 2\\end{pmatrix}$. Welche Matrix-Paare stellen eine korrekte QR-Zerlegung ($A = QR$) dar?",
+            options: [
+                "$Q = \\frac{1}{5}\\begin{pmatrix}3 & 4\\\\ 4 & 3\\end{pmatrix}, R = \\dots$",
+                "$Q = \\begin{pmatrix}0 & -1\\\\ 1 & 0\\end{pmatrix}, R = \\dots$",
+                "$Q = \\frac{1}{5}\\begin{pmatrix}3 & 4\\\\ 4 & -3\\end{pmatrix}, R = \\frac{1}{5}\\begin{pmatrix}25 & 11\\\\ 0 & -2\\end{pmatrix}$"
+            ],
+            correct: 2,
+            explanation: "Eine gültige QR-Zerlegung erfordert, dass $Q$ orthogonal ist ($Q^T Q = I$) und $R$ eine obere Dreiecksmatrix. Bei Option C gilt $Q \\cdot R = \\frac{1}{25} \\begin{pmatrix}3 & 4\\\\ 4 & -3\\end{pmatrix} \\begin{pmatrix}25 & 11\\\\ 0 & -2\\end{pmatrix} = \\frac{1}{25} \\begin{pmatrix}75 & 33-8\\\\ 100 & 44+6\\end{pmatrix} = \\begin{pmatrix}3 & 1\\\\ 4 & 2\\end{pmatrix} = A$. Perfekt!"
+        },
+        {
+            id: 12,
+            question: "Gegeben ist die Matrix $A = \\begin{pmatrix}1 & a & a^2\\\\ 2 & 4 & 8\\\\ 2 & 3 & 5\\end{pmatrix}$. Welche Aussage ist richtig?",
+            options: [
+                "A hat vollen Rang für alle a.",
+                "Für a = 2 ist der Rang von A gleich 2.",
+                "Falls a = 3, so hat A nicht vollen Rang."
+            ],
+            correct: 1,
+            explanation: "Setzen wir $a=2$ ein, erhalten wir die Matrix $\\begin{pmatrix}1 & 2 & 4\\\\ 2 & 4 & 8\\\\ 2 & 3 & 5\\end{pmatrix}$. Die zweite Zeile ist exakt das Doppelte der ersten Zeile. Daher sind die Zeilen linear abhängig und der Rang ist nicht 3. Da die dritte Zeile nicht kollinear zur ersten ist, ist der Rang exakt 2."
+        },
+        {
+            id: 13,
+            question: "Gegeben sei die Matrix $A = \\begin{pmatrix}2 & 1 & 1\\\\ -1 & -2 & 1\\\\ 3 & 0 & 3\\end{pmatrix}$. Welche Aussage über das Bild von A ist korrekt?",
+            options: [
+                "Eine Basis des Bildes ist $\{(2, -1, 3)^T, (1, -2, 0)^T\}$.",
+                "Eine Basis des Bildes ist $\{(2, -1, 3)^T, (1, -2, 0)^T, (1, 1, 3)^T\}$.",
+                "Eine Basis des Bildes ist $\{(2, -1, 3)^T\}$."
+            ],
+            correct: 0,
+            explanation: "Das Bild der Matrix wird von ihren Spaltenvektoren aufgespannt. Die erste und zweite Spalte, $(2, -1, 3)^T$ und $(1, -2, 0)^T$, sind linear unabhängig. Die dritte Spalte ist eine Linearkombination aus diesen. Der Spaltenraum (Bild) ist somit zweidimensional und die beiden ersten Spalten bilden eine Basis."
+        },
+        {
+            id: 14,
+            question: "Gegeben $V = \\operatorname{span}\\{\\cos(x), \\sin(x)\\}$ und die Abbildung $L(f) = f'(x) + \\left(\\int_0^\\pi f(t)dt\\right) \\cdot \\sin(x)$. Welche Aussage ist richtig?",
+            options: [
+                "Die Eigenwerte sind $\\lambda_1 = 0, \\lambda_2 = 2$.",
+                "Die Eigenwerte sind $\\lambda_1 = 1, \\lambda_2 = -1$.",
+                "Die algebraische Vielfachheit des Eigenwerts $\\lambda = 1$ ist 2."
+            ],
+            correct: 2,
+            explanation: "Wenn man die Darstellungsmatrix von L bezüglich der Basis $(\\cos x, \\sin x)$ aufstellt, berechnet man $L(\\cos x) = -\\sin x + 0 = -\\sin x$ und $L(\\sin x) = \\cos x + 2\\sin x$. Die Darstellungsmatrix ist also $\\begin{pmatrix}0 & 1\\\\ -1 & 2\\end{pmatrix}$. Das charakteristische Polynom ist $\\lambda^2 - 2\\lambda + 1 = (\\lambda - 1)^2$. Es gibt also nur den Eigenwert 1 mit algebraischer Vielfachheit 2."
+        },
+        {
+            id: 15,
+            question: "Welches ist eine orthonormale Basis für Polynome vom Grad $\\le 1$ bezüglich $\\langle p, q\\rangle = \\int_{-2}^2 p(x)q(x) dx$?",
+            options: [
+                "$\\{-1, -\\frac{\\sqrt{3}}{2}x\\}$",
+                "$\\{\\frac{1}{2}, \\frac{\\sqrt{3}}{4}x\\}$",
+                "$\\{1, x\\}$"
+            ],
+            correct: 1,
+            explanation: "Eine orthonormale Basis $\{b_1, b_2\}$ erfordert $\\langle b_1, b_1\\rangle = 1$. Testen wir $b_1 = \\frac{1}{2}$ aus Option B: $\\int_{-2}^2 (1/2)^2 dx = \\int_{-2}^2 \\frac{1}{4} dx = \\frac{1}{4} \\cdot 4 = 1$. Der zweite Vektor liefert ebenfalls 1 und wegen Symmetrie ist das Integral von $x$ (ungerade Funktion) gleich 0, also stehen sie senkrecht."
+        },
+        {
+            id: 16,
+            question: "Was ist der Wert von $\\begin{pmatrix}1 & 0 & 0\\end{pmatrix} M_1 M_2 M_3 \\begin{pmatrix}0\\\\ 0\\\\ 1\\end{pmatrix}$?",
+            options: [
+                "12",
+                "6",
+                "7"
+            ],
+            correct: 0,
+            explanation: "Der Ausdruck extrahiert das Element in der 1. Zeile und 3. Spalte der Gesammtmatrix. Man rechnet von rechts nach links: $M_3 \\cdot (0,0,1)^T = (0,0,2)^T$. Dann $M_2 \\cdot (0,0,2)^T = 2 \\cdot (1,2,3)^T = (2,4,6)^T$. Zum Schluss die erste Zeile von $M_1$: $(1,1,1) \\cdot (2,4,6)^T = 2 + 4 + 6 = 12$."
+        },
+        {
+            id: 17,
+            question: "Gegeben $\\langle p, q\\rangle = p(-1)q(-1) + p(0)q(0) + p(1)q(1)$. Für welches a ist $p_a(x) = a + 3x^2$ orthogonal zum Unterraum $U = \\operatorname{span}\\{1, x\\}$?",
+            options: [
+                "a = 0",
+                "a = 2",
+                "a = -2"
+            ],
+            correct: 2,
+            explanation: "Es muss $\\langle p_a, 1\\rangle = 0$ gelten. Die Werte sind $p_a(-1) = a+3$, $p_a(0) = a$, $p_a(1) = a+3$. $\\langle p_a, 1\\rangle = (a+3)\\cdot1 + a\\cdot1 + (a+3)\\cdot1 = 3a + 6 = 0$. Daraus folgt sofort $a = -2$."
+        },
+        {
+            id: 18,
+            question: "Sei $V = C^2(\\mathbb{R})$ und $L(f) = f''(x) + f(x)$. Was ist die Dimension des Kerns von L?",
+            options: [
+                "0",
+                "2",
+                "1"
+            ],
+            correct: 1,
+            explanation: "Der Kern besteht aus allen Funktionen $f$, für die $f''(x) + f(x) = 0$ gilt. Dies ist eine klassische lineare Differentialgleichung zweiter Ordnung. Ihr Lösungsraum wird von den beiden linear unabhängigen Funktionen $\\sin(x)$ und $\\cos(x)$ aufgespannt. Die Dimension ist also 2."
+        },
+        {
+            id: 19,
+            question: "Gegeben Basen $B = \\{ (2,1)^T, (5,3)^T \\}$ und $C = \\{ (3,1)^T, (2,1)^T \\}$. Welche Matrix ist die Übergangsmatrix von B nach C?",
+            options: [
+                "$\\begin{pmatrix}1 & 5\\\\ -4 & 1\\end{pmatrix}$",
+                "$\\begin{pmatrix}-3 & 11\\\\ -2 & 7\\end{pmatrix}$",
+                "$\\begin{pmatrix}0 & -1\\\\ 1 & 4\\end{pmatrix}$"
+            ],
+            correct: 2,
+            explanation: "Die Übergangsmatrix berechnet sich als $T = C^{-1} B$. Die Inverse von $C = \\begin{pmatrix}3 & 2\\\\ 1 & 1\\end{pmatrix}$ ist $C^{-1} = \\begin{pmatrix}1 & -2\\\\ -1 & 3\\end{pmatrix}$. Das Produkt $C^{-1}B = \\begin{pmatrix}1 & -2\\\\ -1 & 3\\end{pmatrix} \\begin{pmatrix}2 & 5\\\\ 1 & 3\\end{pmatrix} = \\begin{pmatrix}0 & -1\\\\ 1 & 4\\end{pmatrix}$."
+        },
+        {
+            id: 20,
+            question: "Im Vektorraum $\\mathbb{R}^2$ ist $\\langle u, v\\rangle = 2u_1v_1 + u_1v_2 + u_2v_1 + u_2v_2$. Was ist die induzierte Norm von $x = (2, -3)^T$?",
+            options: [
+                "$\\sqrt{5}$",
+                "$\\sqrt{13}$",
+                "$\\sqrt{7}$"
+            ],
+            correct: 0,
+            explanation: "Die quadrierte Norm ist $\\langle x, x\\rangle = 2(2)(2) + (2)(-3) + (-3)(2) + (-3)(-3) = 8 - 6 - 6 + 9 = 5$. Die Norm ist die Wurzel daraus, also $\\sqrt{5}$."
+        },
+        {
+            id: 21,
+            question: "Seien A invertierbar und B singulär ($n \\times n$). Welche Aussage ist richtig?",
+            options: [
+                "Die Matrix A + B hat nicht vollen Rang.",
+                "Die Matrix AB ist singulär.",
+                "Die Matrix $A^T B$ ist invertierbar."
+            ],
+            correct: 1,
+            explanation: "Die Determinante des Produktes zweier Matrizen ist das Produkt ihrer Determinanten: $\\det(AB) = \\det(A)\\det(B)$. Da B singulär ist, gilt $\\det(B) = 0$. Damit ist auch $\\det(AB) = \\det(A) \\cdot 0 = 0$. Die Matrix AB ist somit zwingend singulär."
+        },
+        {
+            id: 22,
+            question: "Sei $A = \\begin{pmatrix}2 & -1\\\\ 0 & 1\\end{pmatrix}$. Dann ist $A^9$ gleich...",
+            options: [
+                "$\\begin{pmatrix}512 & -511\\\\ 0 & 1\\end{pmatrix}$",
+                "$\\begin{pmatrix}512 & -512\\\\ 0 & 1\\end{pmatrix}$",
+                "$\\begin{pmatrix}512 & 511\\\\ 0 & 1\\end{pmatrix}$"
+            ],
+            correct: 0,
+            explanation: "Man kann durch Ausprobieren der ersten Potenzen das Muster erkennen: $A^n = \\begin{pmatrix}2^n & 1-2^n\\\\ 0 & 1\\end{pmatrix}$. Für $n=9$ ist $2^9 = 512$ und $1-512 = -511$. Dies liefert exakt die Matrix in Option A."
+        },
+        {
+            id: 23,
+            question: "Für welchen Wert von k hat das System (mit Koeffizientenmatrix $\\begin{pmatrix}1 & 1 & -1\\\\ 2 & 3 & k\\\\ 1 & k & 3\\end{pmatrix}$) unendlich viele Lösungen?",
+            options: [
+                "k = -3",
+                "k = 1",
+                "k = 2"
+            ],
+            correct: 2,
+            explanation: "Damit ein homogenes LGS unendlich viele Lösungen hat, muss die Determinante der Matrix 0 sein. Setzt man $k=2$ ein, berechnet man die Determinante: $1(9-4) - 1(6-2) - 1(4-3) = 5 - 4 - 1 = 0$. Das LGS ist also für $k=2$ abhängig und hat unendlich viele Lösungen."
+        },
+        {
+            id: 24,
+            question: "Gegeben $Y' = AY$ mit $A = \\begin{pmatrix}0 & -2\\\\ 2 & 0\\end{pmatrix}$. Welche Aussage beschreibt das Langzeitverhalten (für $t \\rightarrow \\infty$)?",
+            options: [
+                "Die Lösung konvergiert gegen den Ursprung.",
+                "Die Lösung wächst unbegrenzt.",
+                "Die Lösung bewegt sich auf einer stabilen, periodischen Bahn (Zyklus)."
+            ],
+            correct: 2,
+            explanation: "Das charakteristische Polynom von A ist $\\lambda^2 + 4 = 0$, was zu den rein imaginären Eigenwerten $\\lambda_{1,2} = \\pm 2i$ führt. Rein imaginäre Eigenwerte verursachen weder ein exponentielles Wachstum noch einen Zerfall, sondern führen zu harmonischen Schwingungen (Sinus/Kosinus). Die Lösung bewegt sich folglich auf stabilen, periodischen Kreis-/Ellipsenbahnen."
+        },
+        {
+            id: 25,
+            question: "Sei A eine $n \\times n$ Matrix. Welche der folgenden Aussagen ist immer wahr?",
+            options: [
+                "Jede diagonalisierbare Matrix ist invertierbar.",
+                "Falls $\\det(A) = 1$ gilt, so ist A orthogonal.",
+                "Falls A symmetrisch und orthogonal ist, so gilt $A^2 = I$."
+            ],
+            correct: 2,
+            explanation: "Wenn A symmetrisch ist, gilt $A = A^T$. Wenn A zusätzlich orthogonal ist, gilt die Bedingung $A^T A = I$, was gleichbedeutend ist mit $A^T = A^{-1}$. Verknüpft man beide Eigenschaften, folgt daraus $A = A^{-1}$. Multipliziert man nun beide Seiten mit A, erhält man $A^2 = I$."
+        }
+    ];
+
+    let totalQuestions = quizQuestions.length;
+    let checkedCount = 0;
+    let correctCount = 0;
+
+    const container = document.getElementById('quiz-container');
+
+    document.getElementById('checked-counter').innerText = `0 von ${totalQuestions} Fragen gelöst`;
+
+    quizQuestions.forEach((q, index) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `card-${q.id}`;
+
+        let optionsHtml = '';
+        q.options.forEach((opt, optIndex) => {
+            optionsHtml += `
+                <li>
+                    <label id="label-${q.id}-${optIndex}">
+                        <input type="radio" name="q${q.id}" value="${optIndex}">
+                        <span>${opt}</span>
+                    </label>
+                </li>
+            `;
+        });
+
+        card.innerHTML = `
+            <div class="question-header">Aufgabe ${index + 1}</div>
+            <div class="question-text">${q.question}</div>
+            <ul class="options-list">
+                ${optionsHtml}
+            </ul>
+            <button type="button" class="btn-check" id="btn-${q.id}" onclick="validateQuestion(${q.id})">Frage prüfen</button>
+            <div class="explanation-box" id="expl-${q.id}">
+                <div class="explanation-title">Erklärung:</div>
+                <div id="expl-text-${q.id}">${q.explanation}</div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    function validateQuestion(qId) {
+        const selectedRadio = document.querySelector(`input[name="q${qId}"]:checked`);
+        
+        if (!selectedRadio) {
+            alert("Bitte wähle zuerst eine Antwort aus!");
+            return;
+        }
+
+        const checkedBtn = document.getElementById(`btn-${qId}`);
+        checkedBtn.disabled = true;
+        checkedBtn.innerText = "Überprüft";
+
+        const radios = document.querySelectorAll(`input[name="q${qId}"]`);
+        radios.forEach(r => r.disabled = true);
+
+        const qData = quizQuestions.find(q => q.id === qId);
+        const selectedValue = parseInt(selectedRadio.value);
+        const correctValue = qData.correct;
+
+        if (selectedValue === correctValue) {
+            document.getElementById(`label-${qId}-${selectedValue}`).classList.add('correct-answer');
+            correctCount++;
+        } else {
+            document.getElementById(`label-${qId}-${selectedValue}`).classList.add('wrong-answer');
+            document.getElementById(`label-${qId}-${correctValue}`).classList.add('correct-answer');
+        }
+
+        document.getElementById(`expl-${qId}`).style.display = 'block';
+
+        checkedCount++;
+        updateGlobalProgress();
+        
+        if (window.MathJax) {
+            MathJax.typesetPromise([document.getElementById(`expl-${qId}`)]);
+        }
+    }
+
+    function updateGlobalProgress() {
+        const percent = (checkedCount / totalQuestions) * 100;
+        document.getElementById('global-progress').style.width = `${percent}%`;
+        document.getElementById('checked-counter').innerText = `${checkedCount} von ${totalQuestions} Fragen gelöst`;
+        
+        const successPercent = checkedCount > 0 ? Math.round((correctCount / checkedCount) * 100) : 0;
+        document.getElementById('correct-counter').innerText = `Richtig: ${correctCount} (${successPercent}%)`;
+    }
+</script>
+
+</body>
+</html>
