@@ -8,6 +8,7 @@
     <style>
         :root {
             --primary-color: #3498db;
+            --primary-hover: #2980b9;
             --background-color: #f4f6f9;
             --card-bg: #ffffff;
             --text-color: #2c3e50;
@@ -21,11 +22,11 @@
             color: var(--text-color);
             line-height: 1.6;
             margin: 0;
-            padding: 40px 20px; /* Schön zentriert mit Abstand nach oben */
+            padding: 40px 20px;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
@@ -42,21 +43,29 @@
             color: #2c3e50;
             margin-top: 0;
             margin-bottom: 10px;
-            font-size: 2.2rem;
+            font-size: 2.4rem;
             font-weight: 800;
         }
 
         .subtitle {
             color: var(--text-muted);
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             margin-bottom: 30px;
+        }
+
+        .description {
+            font-size: 1.05rem;
+            max-width: 700px;
+            margin: 0 auto 40px auto;
+            line-height: 1.7;
+            color: #576574;
         }
 
         .exam-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 20px;
-            margin-top: 30px;
+            margin-top: 20px;
         }
 
         .exam-btn {
@@ -64,20 +73,38 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 25px 20px;
+            padding: 25px 15px;
             background-color: #f8f9fa;
             border: 2px solid #e9ecef;
             border-radius: 12px;
             text-decoration: none;
             color: var(--text-color);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .exam-btn:hover {
             background-color: white;
             border-color: var(--primary-color);
             transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(52, 152, 219, 0.15);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.15);
+        }
+
+        /* Hover-Effekt: Oberer blauer Strich */
+        .exam-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: transparent;
+            transition: background-color 0.3s ease;
+        }
+
+        .exam-btn:hover::before {
+            background-color: var(--primary-color);
         }
 
         .exam-title {
@@ -87,13 +114,18 @@
         }
 
         .exam-meta {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
+            font-weight: 600;
+            background-color: #eaf2f8;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-top: 8px;
         }
 
         .icon {
             font-size: 2.5rem;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
     </style>
 </head>
@@ -102,61 +134,96 @@
 <div class="container">
     <div class="welcome-card">
         <h1>Lineare Algebra I/II</h1>
-        <div class="subtitle">Interaktiver Prüfungstrainer der ETH Zürich</div>
+        <div class="subtitle">Interaktiver Prüfungstrainer MC-Teil der Basisprüfung Lineare Algebra I/II</div>
         
-        <p style="font-size: 1.05rem; max-width: 600px; margin: 0 auto; line-height: 1.7;">
-            Willkommen! Wähle eine der untenstehenden Basisprüfungen aus, um in den interaktiven Trainingsmodus zu starten. Deine Ergebnisse werden live ausgewertet.
+        <p class="description">
+            Willkommen! Wähle eine der untenstehenden Basisprüfungen aus, um in den interaktiven Trainingsmodus zu starten. Viel Erfolg!
         </p>
 
         <div class="exam-grid">
 
             <a href="winter26.html" class="exam-btn">
-                <div class="icon">❄️</div>
+                <div class="icon">❄️</div>s
                 <div class="exam-title">Winter 2026</div>
-                <div class="exam-meta">25 Multiple-Choice Fragen</div>
+                <div class="exam-meta">25 MC-Fragen</div>
             </a>
-            
+
             <a href="sommer25.html" class="exam-btn">
                 <div class="icon">☀️</div>
                 <div class="exam-title">Sommer 2025</div>
-                <div class="exam-meta">25 Multiple-Choice Fragen</div>
+                <div class="exam-meta">25 MC-Fragen</div>
+            </a>
+            
+            <a href="winter25.html" class="exam-btn">
+                <div class="icon">❄️</div>
+                <div class="exam-title">Winter 2025</div>
+                <div class="exam-meta">25 MC-Fragen</div>
+            </a>
+            
+            <a href="sommer24.html" class="exam-btn">
+                <div class="icon">☀️</div>
+                <div class="exam-title">Sommer 2024</div>
+                <div class="exam-meta">25 MC-Fragen</div>
             </a>
 
             <a href="winter24.html" class="exam-btn">
                 <div class="icon">❄️</div>
                 <div class="exam-title">Winter 2024</div>
-                <div class="exam-meta">20 Multiple-Choice Fragen</div>
+                <div class="exam-meta">20 MC-Fragen</div>
             </a>
-            
+
             <a href="sommer23.html" class="exam-btn">
                 <div class="icon">☀️</div>
                 <div class="exam-title">Sommer 2023</div>
-                <div class="exam-meta">20 Multiple-Choice Fragen</div>
+                <div class="exam-meta">20 MC-Fragen</div>
             </a>
+            
+            <a href="winter23.html" class="exam-btn">
+                <div class="icon">❄️</div>
+                <div class="exam-title">Winter 2023</div>
+                <div class="exam-meta">20 MC-Fragen</div>
+            </a>
+            
+            <a href="sommer22.html" class="exam-btn">
+                <div class="icon">☀️</div>
+                <div class="exam-title">Sommer 2022</div>
+                <div class="exam-meta">20 MC-Fragen</div>
+            </a>
+            
             
             <a href="winter22.html" class="exam-btn">
                 <div class="icon">❄️</div>
                 <div class="exam-title">Winter 2022</div>
-                <div class="exam-meta">20 Multiple-Choice Fragen</div>
+                <div class="exam-meta">20 MC-Fragen</div>
             </a>
+
+            <a href="sommer21.html" class="exam-btn">
+                <div class="icon">☀️</div>
+                <div class="exam-title">Sommer 2021</div>
+                <div class="exam-meta">20 MC-Fragen</div>
+            </a>
+            
 
             <a href="winter21.html" class="exam-btn">
                 <div class="icon">❄️</div>
                 <div class="exam-title">Winter 2021</div>
-                <div class="exam-meta">20 Multiple-Choice Fragen</div>
-            </a>
-
-            <a href="winter20.html" class="exam-btn">
-                <div class="icon">❄️</div>
-                <div class="exam-title">Winter 2020</div>
-                <div class="exam-meta">20 Multiple-Choice Fragen</div>
+                <div class="exam-meta">20 MC-Fragen</div>
             </a>
 
             <a href="sommer20.html" class="exam-btn">
                 <div class="icon">☀️</div>
                 <div class="exam-title">Sommer 2020</div>
-                <div class="exam-meta">20 Multiple-Choice Fragen</div>
+                <div class="exam-meta">20 MC-Fragen</div>
             </a>
+            
+
+            <a href="winter20.html" class="exam-btn">
+                <div class="icon">❄️</div>
+                <div class="exam-title">Winter 2020</div>
+                <div class="exam-meta">20 MC-Fragen</div>
+            </a>
+
+            
             
         </div>
     </div>

@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinAlg Prüfung - Sommer 2021</title>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --success-bg: #e8f8f0;
+            --error-color: #e74c3c;
+            --error-bg: #fdedec;
+            --background-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 18px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            margin-bottom: 25px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .btn-back:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(-3px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background-color: var(--background-color);
+            padding: 10px 0 20px 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .progress-container {
+            background-color: #dcdde1;
+            border-radius: 10px;
+            height: 18px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            background-color: var(--success-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+
+        .question-header {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #34495e;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f1f2f6;
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+        }
+
+        .options-list {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .options-list li {
+            margin-bottom: 12px;
+        }
+
+        .options-list label {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .options-list label:hover {
+            background-color: #f1f2f6;
+            border-color: #b2bec3;
+        }
+
+        .options-list input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .correct-answer {
+            background-color: var(--success-bg) !important;
+            border-color: var(--success-color) !important;
+            color: #1e7e34 !important;
+            font-weight: 600;
+        }
+
+        .wrong-answer {
+            background-color: var(--error-bg) !important;
+            border-color: var(--error-color) !important;
+            color: #bd2130 !important;
+            font-weight: 600;
+        }
+
+        .btn-check {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-check:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-check:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .explanation-box {
+            display: none;
+            margin-top: 20px;
+            padding: 15px 20px;
+            background-color: #eaf2f8;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 4px;
+            font-size: 0.98rem;
+        }
+
+        .explanation-title {
+            font-weight: 700;
+            color: #2980b9;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <a href="index.html" class="btn-back">
+        ⬅ Zurück zur Startseite
+    </a>
+
+    <h1>Lineare Algebra I/II</h1>
+    <div class="subtitle">Prüfung Sommer 2021 - Multiple Choice</div>
+    
+    <div class="sticky-header">
+        <div class="progress-container">
+            <div class="progress-bar" id="global-progress"></div>
+        </div>
+        <div class="progress-text">
+            <span id="checked-counter">0 von 20 Fragen gelöst</span>
+            <span id="correct-counter" style="color: var(--success-color);">Richtig: 0 (0%)</span>
+        </div>
+    </div>
+
+    <div id="quiz-container"></div>
+</div>
+
+<script>
+    const quizQuestions = [
+        {
+            id: 1,
+            question: "Welcher der folgenden Vektoren ist ein Eigenvektor der Matrix $\\begin{pmatrix}1 & 0 & 2\\\\ 2 & 0 & 0\\\\ 0 & -1 & 1\\end{pmatrix}$?",
+            options: [
+                "$(0, 0, 0)^T$",
+                "$(1, -2, -1)^T$",
+                "$(1, 2, 1)^T$",
+                "Keiner der obigen Vektoren"
+            ],
+            correct: 1,
+            explanation: "Wir multiplizieren die Matrix mit dem Vektor aus (B): $\\begin{pmatrix}1 & 0 & 2\\\\ 2 & 0 & 0\\\\ 0 & -1 & 1\\end{pmatrix} \\begin{pmatrix}1\\\\ -2\\\\ -1\\end{pmatrix} = \\begin{pmatrix}1 - 2\\\\ 2 + 0\\\\ 2 - 1\\end{pmatrix} = \\begin{pmatrix}-1\\\\ 2\\\\ 1\\end{pmatrix}$. Das Resultat $(-1, 2, 1)^T$ entspricht genau $-1 \\cdot (1, -2, -1)^T$. Es ist somit ein Eigenvektor zum Eigenwert $\\lambda = -1$. (Der Nullvektor ist per Definition nie ein Eigenvektor)."
+        },
+        {
+            id: 2,
+            question: "Sei $A = \\begin{pmatrix}1 & 1 & 3 & 15\\\\ 0 & 3 & 3 & 4\\end{pmatrix}$. Was ist $\\dim(\\ker(A))$?",
+            options: [
+                "0",
+                "1",
+                "4",
+                "2"
+            ],
+            correct: 3,
+            explanation: "Die Matrix A hat Dimension $2 \\times 4$. Die beiden Zeilen sind offensichtlich linear unabhängig, der Rang der Matrix ist also $\\operatorname{rank}(A) = 2$. Nach dem Dimensionssatz (Rangsatz) gilt: $\\operatorname{rank}(A) + \\dim(\\ker(A)) = \\text{Anzahl Spalten}$. Also $2 + \\dim(\\ker(A)) = 4 \\implies \\dim(\\ker(A)) = 2$."
+        },
+        {
+            id: 3,
+            question: "Für welches $a \\in \\mathbb{R}$ hat das folgende lineare Gleichungssystem unendlich viele Lösungen?<br>$x_1 + 2x_3 = 5$<br>$-2x_1 + x_2 + 3x_3 = -1$<br>$ax_1 + x_2 + 7x_3 = 9$",
+            options: [
+                "a = 0",
+                "a = -2",
+                "a = 2",
+                "a = 1"
+            ],
+            correct: 0,
+            explanation: "Ein LGS hat unendlich viele (oder keine) Lösungen, wenn die Determinante der Koeffizientenmatrix Null ist. Matrix: $\\begin{pmatrix}1 & 0 & 2\\\\ -2 & 1 & 3\\\\ a & 1 & 7\\end{pmatrix}$. Entwicklung ergibt $\\det = 1(7-3) + 2(-2-a) = 4 - 4 - 2a = -2a$. Für $\\det = 0$ muss folglich $a = 0$ gelten. Für $a=0$ sind die Gleichungen konsistent, es gibt also unendlich viele Lösungen."
+        },
+        {
+            id: 4,
+            question: "Was ist die Determinante der folgenden reellen $5\\times 5$-Matrix?<br>$\\begin{pmatrix}0 & 1 & 4 & 0 & 0\\\\ -1 & 0 & 3 & 0 & 0\\\\ 0 & 0 & 2 & 0 & 0\\\\ 0 & 0 & 0 & 1 & -1\\\\ 0 & 0 & 0 & 1 & 4\\end{pmatrix}$",
+            options: [
+                "4",
+                "-10",
+                "10",
+                "8"
+            ],
+            correct: 2,
+            explanation: "Die Matrix ist eine Blockdiagonalmatrix mit einem $3\\times3$ Block oben links und einem $2\\times2$ Block unten rechts. $\\det(A) = \\det(Block_1) \\cdot \\det(Block_2)$. Block 1: $\\begin{pmatrix}0 & 1 & 4\\\\ -1 & 0 & 3\\\\ 0 & 0 & 2\\end{pmatrix}$. Entwicklung nach Zeile 3 liefert $2 \\cdot (0 - (-1)) = 2$. Block 2: $\\begin{pmatrix}1 & -1\\\\ 1 & 4\\end{pmatrix}$ liefert $4 - (-1) = 5$. Total: $2 \\cdot 5 = 10$."
+        },
+        {
+            id: 5,
+            question: "Sei $B := \\{ (1, 1, 0)^T, (0, 1, 0)^T, (0, 0, 1)^T \\}$ eine Basis von $\\mathbb{R}^3$. Welche Basis C ergibt sich durch Anwendung des Gram-Schmidt-Verfahrens bezüglich des Standardskalarprodukts?",
+            options: [
+                "$C = \\{ (1, 0, 0)^T, (0, 1, 0)^T, (0, 0, 1)^T \\}$",
+                "$C = \\{ \\frac{1}{\\sqrt{2}}(1, 1, 0)^T, (0, 1, 0)^T, (0, 0, 1)^T \\}$",
+                "$C = \\{ \\frac{1}{\\sqrt{2}}(1, 1, 0)^T, \\frac{1}{\\sqrt{2}}(-1, 1, 0)^T, (0, 0, 1)^T \\}$",
+                "$C = \\{ (1, 1, 0)^T, (-1, 1, 0)^T, (0, 0, 1)^T \\}$"
+            ],
+            correct: 2,
+            explanation: "Erster Vektor normiert: $u_1 = \\frac{1}{\\sqrt{2}}(1, 1, 0)^T$. Zweiter Vektor $v_2 = (0, 1, 0)^T$. Orthogonalisieren: $v_2 - \\langle v_2, u_1\\rangle u_1 = (0,1,0)^T - \\frac{1}{\\sqrt{2}}\\cdot\\frac{1}{\\sqrt{2}}(1,1,0)^T = (0,1,0)^T - (0.5, 0.5, 0)^T = (-0.5, 0.5, 0)^T$. Normiert ergibt dies $\\frac{1}{\\sqrt{2}}(-1, 1, 0)^T$. Der dritte Vektor $(0,0,1)^T$ ist bereits orthogonal zu den anderen und hat Norm 1. Option (C) ist exakt dies."
+        },
+        {
+            id: 6,
+            question: "Sei $A = \\begin{pmatrix}2 & -1 & 0 & 0\\\\ -1 & 2 & 0 & 0\\\\ 3 & 4 & -2 & 4\\\\ 1 & 6 & 4 & -2\\end{pmatrix}$. Welche der folgenden Aussagen ist <b>falsch</b>?",
+            options: [
+                "A ist halbeinfach.",
+                "A hat einen Eigenwert mit algebraischer Vielfachheit > 1.",
+                "A hat nur reelle Eigenwerte.",
+                "Für alle ganzen Zahlen $k \\ge 1$ gilt $A^k \\neq 0$."
+            ],
+            correct: 1,
+            explanation: "Dies ist eine Blockdreiecksmatrix. Eigenwerte finden wir in den Diagonalblöcken. Oben $\\begin{pmatrix}2 & -1\\\\ -1 & 2\\end{pmatrix}$ hat EW $\\lambda=1, 3$. Unten $\\begin{pmatrix}-2 & 4\\\\ 4 & -2\\end{pmatrix}$ hat EW $\\lambda=2, -6$. Die Matrix hat also vier paarweise verschiedene Eigenwerte (1, 3, 2, -6). Folglich hat jeder Eigenwert die algebraische Vielfachheit 1. Aussage (B) ist also falsch."
+        },
+        {
+            id: 7,
+            question: "Sei $A := \\begin{pmatrix}-1 & -1\\\\ 1 & 3\\\\ -1 & -1\\\\ 1 & 3\\end{pmatrix}$. Welches Paar (Q, R) ist eine korrekte QR-Zerlegung von A?",
+            options: [
+                "Option A mit $R_{11} = -2$",
+                "Option B mit falschem Q",
+                "Option C: $Q = \\frac{1}{2}\\begin{pmatrix}-1 & 1 & \\sqrt{2} & 0\\\\ 1 & 1 & 0 & \\sqrt{2}\\\\ -1 & 1 & -\\sqrt{2} & 0\\\\ 1 & 1 & 0 & -\\sqrt{2}\\end{pmatrix}, R = \\begin{pmatrix}2 & 4\\\\ 0 & 2\\\\ 0 & 0\\\\ 0 & 0\\end{pmatrix}$",
+                "Option D mit fehlenden Wurzeln"
+            ],
+            correct: 2,
+            explanation: "Die erste Spalte von A hat die Norm $\\sqrt{(-1)^2+1^2+(-1)^2+1^2} = \\sqrt{4} = 2$. Somit muss in der R-Matrix oben links $R_{11} = 2$ stehen (fällt Option A weg). Die erste Spalte von Q ist $a_1 / 2 = (-0.5, 0.5, -0.5, 0.5)^T$. Zweite Spalte R: $R_{12} = \\langle q_1, a_2\\rangle = 0.5(-1(1) + 1(3) - 1(1) + 1(3)) = 4$. Der orthogonale Teil der zweiten Spalte hat ebenfalls Norm 2. Das führt eindeutig auf Matrix Q in Option C."
+        },
+        {
+            id: 8,
+            question: "Für welche dieser Matrizen A ist $A^{100}$ die Nullmatrix?",
+            options: [
+                "$A = \\begin{pmatrix}0 & 0 & 0\\\\ 1 & 0 & 0\\\\ -\\pi & 1 & 0\\end{pmatrix}$",
+                "$A = \\begin{pmatrix}1 & 0 & 0\\\\ 0 & 0 & 0\\\\ 0 & 0 & 0\\end{pmatrix}$",
+                "$A = \\begin{pmatrix}0 & \\pi\\\\ 1 & 0\\end{pmatrix}$",
+                "$A = \\begin{pmatrix}1 & 0 & 0\\\\ 0 & 1 & 0\\\\ 0 & 0 & 1\\end{pmatrix}$"
+            ],
+            correct: 0,
+            explanation: "Eine Matrix A erfüllt $A^k = 0$ für ein k (sie ist nilpotent), wenn alle ihre Eigenwerte 0 sind. Matrix (A) ist eine strikte untere Dreiecksmatrix, ihre Eigenwerte (die Diagonaleinträge) sind alle 0. Bei solchen $3\\times3$ Matrizen gilt bereits $A^3 = 0$. Somit ist logischerweise auch $A^{100} = 0$."
+        },
+        {
+            id: 9,
+            question: "Was sind Eigenwerte der Matrix $\\begin{pmatrix}3 & 2 & 0\\\\ 3 & 2 & 0\\\\ 2 & 3 & 5\\end{pmatrix}$?",
+            options: [
+                "0, 5, 5",
+                "0, 0, 5",
+                "2, 3, 5",
+                "-5, 0, 5"
+            ],
+            correct: 0,
+            explanation: "Da die ersten beiden Zeilen identisch sind, ist die Determinante 0, woraus sofort $\\lambda_1 = 0$ folgt. Es ist auch eine Blockdreiecksmatrix. Der untere Block gibt uns den Eigenwert 5. Der obere Block $\\begin{pmatrix}3 & 2\\\\ 3 & 2\\end{pmatrix}$ hat die Spur 5. Da ein Eigenwert 0 ist, muss der andere 5 sein, damit die Summe 5 ergibt. Eigenwerte sind also 0, 5, 5."
+        },
+        {
+            id: 10,
+            question: "Was ist eine Basis von $\\operatorname{im}\\begin{pmatrix}1 & -1 & 2\\\\ 3 & -2 & 3\\\\ -2 & 1 & -1\\end{pmatrix}$?",
+            options: [
+                "$\\left\\{ \\begin{pmatrix}1\\\\ 3\\\\ -2\\end{pmatrix}, \\begin{pmatrix}-1\\\\ -2\\\\ 1\\end{pmatrix} \\right\\}$",
+                "$\\left\\{ \\begin{pmatrix}1\\\\ 3\\\\ -2\\end{pmatrix}, \\begin{pmatrix}-1\\\\ -2\\\\ 1\\end{pmatrix}, \\begin{pmatrix}2\\\\ 3\\\\ -1\\end{pmatrix} \\right\\}$",
+                "$\\left\\{ \\begin{pmatrix}1\\\\ 3\\\\ -2\\end{pmatrix} \\right\\}$",
+                "Standardbasis des $\\mathbb{R}^3$"
+            ],
+            correct: 0,
+            explanation: "Das Bild wird von den Spaltenvektoren aufgespannt. Wenn wir die Spalten betrachten: $S_3 = (2, 3, -1)^T$. Es fällt auf, dass $S_3 = -S_1 - 3S_2$. Die dritte Spalte ist also linear abhängig von den ersten beiden. Die ersten beiden sind linear unabhängig. Daher bilden sie eine Basis des Bildes (Rang 2)."
+        },
+        {
+            id: 11,
+            question: "Sei $U := \\{ A = (a_{i,j}) \\in \\mathbb{R}^{3\\times 4} \\mid \\sum_{i=1}^3 \\sum_{j=1}^4 a_{i,j} = 0 \\}$. Welche der folgenden Aussagen ist wahr?",
+            options: [
+                "$\\dim(U) = 10$",
+                "$\\dim(U) = 1$",
+                "$\\dim(U) = 11$",
+                "U ist kein Vektorraum."
+            ],
+            correct: 2,
+            explanation: "Der Vektorraum aller reellen $3\\times 4$ Matrizen hat die Dimension $3 \\cdot 4 = 12$. Die gegebene Bedingung ist eine einzige homogene lineare Gleichung (Summe aller Einträge = 0). Eine einzige nichttriviale Nebenbedingung verringert die Dimension um genau 1. Also ist $\\dim(U) = 12 - 1 = 11$."
+        },
+        {
+            id: 12,
+            question: "Seien $A := \\begin{pmatrix}1 & 0 & -1\\\\ 2 & 0 & 2\\\\ 1 & -1 & 0\\end{pmatrix}$ und $B := \\frac{1}{4}\\begin{pmatrix}2 & 1 & 0\\\\ 2 & 1 & a\\\\ -2 & 1 & 0\\end{pmatrix}$. Für welches $a \\in \\mathbb{R}$ gilt $A^{-1} = B$?",
+            options: [
+                "a = 0",
+                "a = -4",
+                "a = 4",
+                "a = 1"
+            ],
+            correct: 1,
+            explanation: "Wenn $A^{-1} = B$, dann muss $A \\cdot B = I_3$ gelten. Das heisst, die Multiplikation muss $4I_3$ ergeben, wenn wir den Faktor 1/4 ignorieren. Betrachten wir das Element in der 3. Zeile, 3. Spalte von $4I_3$, welches 4 sein muss. Wir berechnen es über (Zeile 3 von A) mal (Spalte 3 der Matrix in B): $1(0) + (-1)(a) + 0(0) = -a$. Da $-a = 4$ gelten muss, folgt $a = -4$."
+        },
+        {
+            id: 13,
+            question: "Was ist eine Basis von $\\operatorname{ker}\\begin{pmatrix}2 & 3 & 2 & 4 & 2\\\\ 2 & 5 & 4 & 1 & 6\\\\ 0 & -1 & -1 & -1 & -2\\end{pmatrix}$?",
+            options: [
+                "Spaltenvektoren der Matrix",
+                "Vektoren der Länge 3",
+                "Vektoren aus Basis (C)",
+                "$\\left\\{ (1, -2, 2, 0, 0)^T, (1, 0, -2, 0, 1)^T \\right\\}$"
+            ],
+            correct: 3,
+            explanation: "Der Kern besteht aus den Vektoren $v$, für die $Av = 0$ gilt. Wir testen den ersten Vektor aus Option (D): $(1, -2, 2, 0, 0)^T$. Zeile 1: $2(1) + 3(-2) + 2(2) = 2 - 6 + 4 = 0$. Zeile 2: $2(1) + 5(-2) + 4(2) = 2 - 10 + 8 = 0$. Das gleiche gilt für den zweiten Vektor. Beide liegen im Kern, sind linear unabhängig und der Kern hat genau Dimension 2."
+        },
+        {
+            id: 14,
+            question: "Sei $A := \\begin{pmatrix}1 & 2\\\\ 2 & 1\\end{pmatrix}$ und sei $q_A(x) := x^T Ax$ die zu A gehörige quadratische Form. Sei $X := \\{x \\in \\mathbb{R}^2 \\mid q_A(x) = 1\\}$. Welche Aussage ist wahr?",
+            options: [
+                "X ist eine Hyperbel.",
+                "X ist die leere Menge.",
+                "X ist ein sich schneidendes Geradenpaar.",
+                "X ist eine Ellipse."
+            ],
+            correct: 0,
+            explanation: "Wir suchen die Eigenwerte von A. Das charakteristische Polynom ist $(1-\\lambda)^2 - 4 = 0 \\implies 1-\\lambda = \\pm 2 \\implies \\lambda_1 = 3, \\lambda_2 = -1$. Da ein Eigenwert positiv und der andere negativ ist, hat die quadratische Form die Signatur (+, -). Die Gleichung $3y_1^2 - y_2^2 = 1$ in Hauptachsenform beschreibt klassisch eine Hyperbel."
+        },
+        {
+            id: 15,
+            question: "Welche der folgenden Teilmengen ist <b>kein</b> Untervektorraum?",
+            options: [
+                "$\\mathbb{R}^3 \\subset \\mathbb{R}^3$",
+                "$\\{A \\in \\mathbb{C}^{n\\times n} \\mid A^T = A\\} \\subset \\mathbb{C}^{n\\times n}$",
+                "$\\{p \\in P_3 \\mid p(1) = 0 \\text{ und } p(1100) = 0\\} \\subset P_3$",
+                "$\\{(x_1, x_2, x_3)^T \\in \\mathbb{R}^3 \\mid |x_1| + |x_2| = |x_3|\\} \\subset \\mathbb{R}^3$"
+            ],
+            correct: 3,
+            explanation: "Ein Vektorraum muss abgeschlossen bezüglich Addition sein. Option (D) beschreibt einen Doppelkegel. Die Vektoren $(1, 0, 1)$ und $(0, 1, -1)$ liegen beide in der Menge, da $|1|+|0|=|1|$ und $|0|+|1|=|-1|$. Ihre Summe ist $(1, 1, 0)$. Aber $|1|+|1| = 2 \neq |0|$. Die Menge ist nicht abgeschlossen, also kein Unterraum."
+        },
+        {
+            id: 16,
+            question: "Sei $A \\in \\mathbb{R}^{3\\times 3}$ eine Matrix. Welche Aussage ist im Allgemeinen <b>falsch</b>?",
+            options: [
+                "Wenn v ein Eigenvektor von A zum Eigenwert $\\lambda$ ist, dann ist v ein Eigenvektor von $A^3$ zum Eigenwert $\\lambda^3$.",
+                "Wenn v ein Eigenvektor von $A^2$ ist, dann ist v auch ein Eigenvektor von A.",
+                "Falls A invertierbar ist, gilt $\\det(A^{-3}) = \\frac{1}{\\det(A)^3}$.",
+                "Wenn B ähnlich zu A ist, dann ist $B^3$ ähnlich zu $A^3$."
+            ],
+            correct: 1,
+            explanation: "Betrachte eine $180^\\circ$ Rotation im Raum. Die quadrierte Matrix ist eine $360^\\circ$ Rotation, also die Einheitsmatrix (Identität). Für die Identitätsmatrix ist *jeder* Vektor ein Eigenvektor. Für die $180^\\circ$ Rotation sind jedoch nur die Vektoren auf der Drehachse oder in der Rotationsebene Eigenvektoren. Daher ist die Umkehrung (b) falsch."
+        },
+        {
+            id: 17,
+            question: "Sei $U := \\{(x_1, x_2, x_3)^T \\mid x_1 + x_2 = ax_3 \\text{ und } x_1 + x_2 = x_3\\}$ und $V := \\operatorname{span}\\{(2, 1, 3)^T, (1, -1, 0)^T\\}$. Für welches a gilt $U = V$?",
+            options: [
+                "a = 1",
+                "a = 0",
+                "a = -1",
+                "Es gibt kein solches a."
+            ],
+            correct: 0,
+            explanation: "V ist zweidimensional und alle Vektoren in V erfüllen $x_1 + x_2 = x_3$. Damit $U = V$ gilt, muss U ebenfalls exakt diese zweidimensionale Ebene sein. Wenn $a \\neq 1$, dann fordern die beiden Gleichungen für U zwingend $x_3 = 0$ und folglich $x_1 = -x_2$, was nur eine eindimensionale Gerade ist. Nur wenn $a = 1$ sind beide Gleichungen identisch und U wird zur vollen 2D-Ebene."
+        },
+        {
+            id: 18,
+            question: "Sei $A \\in \\mathbb{R}^{4\\times n}$ mit $\\dim(\\ker(A)) = 2$ und $\\operatorname{im}(A) = \\operatorname{span}\\{(1, 0, 1, 0)^T, (-1, 1, 1, 0)^T, (0, 2, 0, 0)^T\\}$. Was ist $n$?",
+            options: [
+                "n = 4",
+                "n = 3",
+                "n = 5",
+                "Die Angaben reichen nicht aus."
+            ],
+            correct: 2,
+            explanation: "Die drei Vektoren, die das Bild aufspannen, sind linear unabhängig. Daher ist die Dimension des Bildes (der Rang der Matrix) gleich 3. Laut dem Dimensionssatz (Rangsatz) gilt: $n = \\dim(\\ker(A)) + \\operatorname{rank}(A)$. Also ist $n = 2 + 3 = 5$."
+        },
+        {
+            id: 19,
+            question: "Sei $P_3$ der Raum der Polynome mit dem Skalarprodukt $\\langle p, q\\rangle = \\int_{-1}^1 p(x)q(x)dx$. Wählen Sie eine Orthonormalbasis für $\\operatorname{span}\\{x, x^2\\}$.",
+            options: [
+                "$\\{ \\frac{1}{\\sqrt{2}}, \\sqrt{\\frac{7}{2}}x^3 \\}$",
+                "$\\{ \\sqrt{\\frac{3}{2}}x, \\sqrt{\\frac{5}{2}}x^2 \\}$",
+                "$\\{ \\sqrt{\\frac{3}{2}}x, \\sqrt{\\frac{15}{4}}(x - x^2) \\}$",
+                "$\\{ x, x^2 \\}$"
+            ],
+            correct: 1,
+            explanation: "Wir prüfen, ob $x$ und $x^2$ bereits orthogonal sind: $\\langle x, x^2\\rangle = \\int_{-1}^1 x^3 dx = 0$. Sie stehen also bereits senkrecht aufeinander! Wir müssen sie nur noch normieren. Norm zum Quadrat von $x$ ist $\\int_{-1}^1 x^2 dx = 2/3$. Vektor normiert: $\\sqrt{3/2}x$. Norm zum Quadrat von $x^2$ ist $\\int_{-1}^1 x^4 dx = 2/5$. Vektor normiert: $\\sqrt{5/2}x^2$."
+        },
+        {
+            id: 20,
+            question: "Sei $A \\in \\mathbb{R}^{n\\times n}$ eine Matrix, die N Einsen und sonst nur Nullen enthält. Welche Aussage ist <b>falsch</b>?",
+            options: [
+                "Wenn $N > n$, kann es sein, dass A orthogonal ist.",
+                "Wenn $n = N$ und A invertierbar ist, dann ist A orthogonal.",
+                "Wenn A orthogonal ist, gibt es ein $k > 0$, sodass $A^k = I$.",
+                "Wenn $N < n$, dann ist A nicht invertierbar."
+            ],
+            correct: 0,
+            explanation: "Eine Matrix, die nur Nullen und Einsen hat, ist nur dann orthogonal, wenn in jeder Zeile und Spalte genau eine Eins steht (eine Permutationsmatrix). In diesem Fall ist exakt $N = n$. Hat sie mehr Einsen ($N > n$), gibt es mindestens eine Spalte/Zeile mit mehreren Einsen, was die Längenorm $>1$ macht (und/oder Vektoren nicht-orthogonal). Die Behauptung (A) ist folglich falsch."
+        }
+    ];
+
+    let totalQuestions = quizQuestions.length;
+    let checkedCount = 0;
+    let correctCount = 0;
+
+    const container = document.getElementById('quiz-container');
+
+    document.getElementById('checked-counter').innerText = `0 von ${totalQuestions} Fragen gelöst`;
+
+    quizQuestions.forEach((q, index) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `card-${q.id}`;
+
+        let optionsHtml = '';
+        q.options.forEach((opt, optIndex) => {
+            optionsHtml += `
+                <li>
+                    <label id="label-${q.id}-${optIndex}">
+                        <input type="radio" name="q${q.id}" value="${optIndex}">
+                        <span>${opt}</span>
+                    </label>
+                </li>
+            `;
+        });
+
+        card.innerHTML = `
+            <div class="question-header">Aufgabe ${index + 1}</div>
+            <div class="question-text">${q.question}</div>
+            <ul class="options-list">
+                ${optionsHtml}
+            </ul>
+            <button type="button" class="btn-check" id="btn-${q.id}" onclick="validateQuestion(${q.id})">Frage prüfen</button>
+            <div class="explanation-box" id="expl-${q.id}">
+                <div class="explanation-title">Erklärung:</div>
+                <div id="expl-text-${q.id}">${q.explanation}</div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    function validateQuestion(qId) {
+        const selectedRadio = document.querySelector(`input[name="q${qId}"]:checked`);
+        
+        if (!selectedRadio) {
+            alert("Bitte wähle zuerst eine Antwort aus!");
+            return;
+        }
+
+        const checkedBtn = document.getElementById(`btn-${qId}`);
+        checkedBtn.disabled = true;
+        checkedBtn.innerText = "Überprüft";
+
+        const radios = document.querySelectorAll(`input[name="q${qId}"]`);
+        radios.forEach(r => r.disabled = true);
+
+        const qData = quizQuestions.find(q => q.id === qId);
+        const selectedValue = parseInt(selectedRadio.value);
+        const correctValue = qData.correct;
+
+        if (selectedValue === correctValue) {
+            document.getElementById(`label-${qId}-${selectedValue}`).classList.add('correct-answer');
+            correctCount++;
+        } else {
+            document.getElementById(`label-${qId}-${selectedValue}`).classList.add('wrong-answer');
+            document.getElementById(`label-${qId}-${correctValue}`).classList.add('correct-answer');
+        }
+
+        document.getElementById(`expl-${qId}`).style.display = 'block';
+
+        checkedCount++;
+        updateGlobalProgress();
+        
+        if (window.MathJax) {
+            MathJax.typesetPromise([document.getElementById(`expl-${qId}`)]);
+        }
+    }
+
+    function updateGlobalProgress() {
+        const percent = (checkedCount / totalQuestions) * 100;
+        document.getElementById('global-progress').style.width = `${percent}%`;
+        document.getElementById('checked-counter').innerText = `${checkedCount} von ${totalQuestions} Fragen gelöst`;
+        
+        const successPercent = checkedCount > 0 ? Math.round((correctCount / checkedCount) * 100) : 0;
+        document.getElementById('correct-counter').innerText = `Richtig: ${correctCount} (${successPercent}%)`;
+    }
+</script>
+
+</body>
+</html>

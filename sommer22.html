@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinAlg Prüfung - Sommer 2022</title>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --success-bg: #e8f8f0;
+            --error-color: #e74c3c;
+            --error-bg: #fdedec;
+            --background-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 18px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            margin-bottom: 25px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .btn-back:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(-3px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background-color: var(--background-color);
+            padding: 10px 0 20px 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .progress-container {
+            background-color: #dcdde1;
+            border-radius: 10px;
+            height: 18px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            background-color: var(--success-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+
+        .question-header {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #34495e;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f1f2f6;
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+        }
+
+        .options-list {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .options-list li {
+            margin-bottom: 12px;
+        }
+
+        .options-list label {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .options-list label:hover {
+            background-color: #f1f2f6;
+            border-color: #b2bec3;
+        }
+
+        .options-list input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .correct-answer {
+            background-color: var(--success-bg) !important;
+            border-color: var(--success-color) !important;
+            color: #1e7e34 !important;
+            font-weight: 600;
+        }
+
+        .wrong-answer {
+            background-color: var(--error-bg) !important;
+            border-color: var(--error-color) !important;
+            color: #bd2130 !important;
+            font-weight: 600;
+        }
+
+        .btn-check {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-check:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-check:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .explanation-box {
+            display: none;
+            margin-top: 20px;
+            padding: 15px 20px;
+            background-color: #eaf2f8;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 4px;
+            font-size: 0.98rem;
+        }
+
+        .explanation-title {
+            font-weight: 700;
+            color: #2980b9;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <a href="index.html" class="btn-back">
+        ⬅ Zurück zur Startseite
+    </a>
+
+    <h1>Lineare Algebra I/II</h1>
+    <div class="subtitle">Prüfung Sommer 2022 - Multiple Choice</div>
+    
+    <div class="sticky-header">
+        <div class="progress-container">
+            <div class="progress-bar" id="global-progress"></div>
+        </div>
+        <div class="progress-text">
+            <span id="checked-counter">0 von 20 Fragen gelöst</span>
+            <span id="correct-counter" style="color: var(--success-color);">Richtig: 0 (0%)</span>
+        </div>
+    </div>
+
+    <div id="quiz-container"></div>
+</div>
+
+<script>
+    const quizQuestions = [
+        {
+            id: 1,
+            question: "Sei $A = \\begin{pmatrix}8 & 5\\\\ 7 & 6\\end{pmatrix}$. Dann ist die Determinante $\\det(A^{121} - A^{120})$ gleich...",
+            options: [
+                "0",
+                "1",
+                "120",
+                "121"
+            ],
+            correct: 0,
+            explanation: "Wir können den Term faktorisieren: $A^{121} - A^{120} = A^{120}(A - I)$. Mit dem Determinantenmultiplikationssatz gilt $\\det(A^{120}(A - I)) = \\det(A)^{120} \\cdot \\det(A - I)$. Berechnen wir $A - I$: $\\begin{pmatrix}7 & 5\\\\ 7 & 5\\end{pmatrix}$. Die beiden Zeilen dieser Matrix sind identisch, daher ist ihre Determinante 0. Somit ist das gesamte Produkt $\\det(A)^{120} \\cdot 0 = 0$."
+        },
+        {
+            id: 2,
+            question: "Sei $A \\in \\mathbb{R}^{2\\times2}$ eine reelle Matrix. Falls die Matrix A die Eigenwerte 5 und 6 hat, was sind dann die Eigenwerte von $A^2$?",
+            options: [
+                "5/2 und 3",
+                "5 und 6",
+                "10 und 12",
+                "25 und 36"
+            ],
+            correct: 3,
+            explanation: "Wenn $v$ ein Eigenvektor von $A$ zum Eigenwert $\\lambda$ ist, also $Av = \\lambda v$, dann gilt für $A^2$: $A^2 v = A(Av) = A(\\lambda v) = \\lambda (Av) = \\lambda(\\lambda v) = \\lambda^2 v$. Die Eigenwerte quadrieren sich also. Aus 5 und 6 werden $5^2 = 25$ und $6^2 = 36$."
+        },
+        {
+            id: 3,
+            question: "Sei $A \\in \\mathbb{R}^{n\\times n}$ eine symmetrische Matrix. Die Eigenwerte von A sind dann immer:",
+            options: [
+                "positiv",
+                "reell",
+                "negativ",
+                "komplex mit positivem Realanteil"
+            ],
+            correct: 1,
+            explanation: "Der Spektralsatz für symmetrische Matrizen besagt, dass jede reelle symmetrische Matrix nur reelle Eigenwerte besitzt (und über $\\mathbb{R}$ orthogonal diagonalisierbar ist). Sie müssen nicht zwingend positiv sein (die Definitheit ist hier nicht gegeben)."
+        },
+        {
+            id: 4,
+            question: "Ein Vektor $v \\in \\mathbb{R}^2$ hat bezüglich der Basis $B := \\{ (3, -1)^T, (8, 5)^T \\}$ die Koordinaten $[v]_B = (2, 3)^T$. Die Koordinaten von v bezüglich der Standardbasis sind dann gleich...",
+            options: [
+                "$(2, 3)^T$",
+                "$(25, 7)^T$",
+                "$(30, 13)^T$",
+                "$(48, 12)^T$"
+            ],
+            correct: 2,
+            explanation: "Die Koordinaten im System B sind die Skalare (Vorfaktoren) für die Linearkombination der Basisvektoren: $v = 2 \\cdot (3, -1)^T + 3 \\cdot (8, 5)^T$. Das ergibt $(6, -2)^T + (24, 15)^T = (30, 13)^T$."
+        },
+        {
+            id: 5,
+            question: "Sei $A \\in \\mathbb{R}^{2\\times 2}$ diagonalisierbar mit Eigenwerten $\\lambda_1$ und $\\lambda_2$. Dann ist die Determinante $\\det(e^A)$ gleich...",
+            options: [
+                "$\\ln(\\lambda_1) \\ln(\\lambda_2)$",
+                "$e^{\\lambda_1\\lambda_2}$",
+                "$e^{\\lambda_1+\\lambda_2}$",
+                "$\\lambda_1\\lambda_2$"
+            ],
+            correct: 2,
+            explanation: "Es gilt die Identität (Satz von Liouville): $\\det(e^A) = e^{\\operatorname{Spur}(A)}$. Die Spur einer Matrix ist gleich der Summe ihrer Eigenwerte, also $\\operatorname{Spur}(A) = \\lambda_1 + \\lambda_2$. Daraus folgt sofort $\\det(e^A) = e^{\\lambda_1 + \\lambda_2}$."
+        },
+        {
+            id: 6,
+            question: "Welche der folgenden Matrizen ist die Inverse von $\\begin{pmatrix}-2 & 0 & 0\\\\ 0 & 1 & 1\\\\ 2 & 0 & 1\\end{pmatrix}$?",
+            options: [
+                "$\\begin{pmatrix}-1/2 & 0 & 0\\\\ -1 & 1 & 1\\\\ 1 & 0 & -1\\end{pmatrix}$",
+                "$\\begin{pmatrix}1/2 & 0 & 0\\\\ -1 & 1 & -1\\\\ 1 & 0 & 1\\end{pmatrix}$",
+                "$\\begin{pmatrix}-1/2 & 0 & 0\\\\ -1 & 1 & -1\\\\ 1 & 0 & 1\\end{pmatrix}$",
+                "$\\begin{pmatrix}1/2 & 0 & 0\\\\ 1 & -1 & 1\\\\ 1 & 0 & 1\\end{pmatrix}$"
+            ],
+            correct: 2,
+            explanation: "Man kann dies leicht durch das Matrixprodukt $A \\cdot A^{-1} = I$ überprüfen. Multipliziert man die Ursprungsmatrix mit der Matrix aus (C), erhält man die Einheitsmatrix (z.B. 1. Zeile mal 1. Spalte: $(-2)(-1/2) + 0 + 0 = 1$). Alternativ berechnet man die Inverse klassisch mit dem Gauss-Verfahren."
+        },
+        {
+            id: 7,
+            question: "Welche der folgenden Aussagen gilt allgemein für eine reguläre Matrix $A \\in \\mathbb{R}^{n\\times n}$?",
+            options: [
+                "$(A^T)^{-1} = (A^{-1})^T$",
+                "$(A^T)^T = (A^{-1})^T$",
+                "$(A^T)^{-1} = (A^{-1})^{-1}$",
+                "keine der obigen Aussagen ist richtig"
+            ],
+            correct: 0,
+            explanation: "Inversions- und Transpositionsoperationen kommutieren bei regulären (invertierbaren) Matrizen. Das heisst, die Inverse der Transponierten ist gleich der Transponierten der Inversen."
+        },
+        {
+            id: 8,
+            question: "Welche der folgenden Aussagen impliziert <b>nicht</b>, dass die Matrix $A \\in \\mathbb{R}^{n\\times n}$ diagonalisierbar ist?",
+            options: [
+                "$A^T = A$",
+                "A besitzt n paarweise verschiedene Eigenwerte.",
+                "A ist regulär.",
+                "A besitzt n linear unabhängige Eigenvektoren."
+            ],
+            correct: 2,
+            explanation: "Dass eine Matrix regulär (invertierbar) ist, bedeutet nur, dass die Determinante nicht Null ist (bzw. der Eigenwert 0 nicht vorkommt). Es sagt nichts über die Diagonalisierbarkeit aus. Ein klassisches Gegenbeispiel ist $\\begin{pmatrix}1 & 1\\\\ 0 & 1\\end{pmatrix}$ - regulär (Det = 1), aber nicht diagonalisierbar."
+        },
+        {
+            id: 9,
+            question: "Welcher der folgenden Vektoren ist ein Eigenvektor der Matrix $\\begin{pmatrix}2 & 1 & 0\\\\ 1 & 2 & 1\\\\ 0 & 1 & 2\\end{pmatrix}$?",
+            options: [
+                "$(1, -\\sqrt{2}, 1)^T$",
+                "$(\\sqrt{2}/8, 3)^T$",
+                "$(0, 1, 0)^T$",
+                "$(\\sqrt{2}, 1/\\sqrt{2})^T$"
+            ],
+            correct: 0,
+            explanation: "Wir prüfen durch Matrixmultiplikation. A mal $(1, -\\sqrt{2}, 1)^T$ ergibt $(2-\\sqrt{2}, 1-2\\sqrt{2}+1, -\\sqrt{2}+2)^T = (2-\\sqrt{2}, 2-2\\sqrt{2}, 2-\\sqrt{2})^T$. Wenn man den Faktor $(2-\\sqrt{2})$ ausklammert, erhält man $(2-\\sqrt{2}) \\cdot (1, -\\sqrt{2}, 1)^T$. Der Vektor ist also ein Eigenvektor zum Eigenwert $\\lambda = 2-\\sqrt{2}$."
+        },
+        {
+            id: 10,
+            question: "Was ist die Orthogonalprojektion von $v = (0, 6, 3)^T$ auf den Vektor $u = (1, 1, -1)^T$ bezüglich des euklidischen Skalarprodukts in $\\mathbb{R}^3$?",
+            options: [
+                "$(1, 1, -1)^T$",
+                "$(-1, -1, 1)^T$",
+                "$(0, 6, 3)^T$",
+                "$(1, 7, 2)^T$"
+            ],
+            correct: 0,
+            explanation: "Die Projektionsformel lautet $P = \\frac{\\langle v, u\\rangle}{\\langle u, u\\rangle} u$. Das Skalarprodukt im Zähler ist $0(1) + 6(1) + 3(-1) = 3$. Das im Nenner ist $1^2 + 1^2 + (-1)^2 = 3$. Die Projektion ist folglich $\\frac{3}{3} u = 1 \\cdot u = (1, 1, -1)^T$."
+        },
+        {
+            id: 11,
+            question: "Sei $A \\in \\mathbb{R}^{m\\times n}$ eine Matrix. Welche der folgenden Aussagen ist im Allgemeinen wahr?",
+            options: [
+                "Die Spalten von A spannen das Bild von A auf.",
+                "Die Spalten von A bilden eine Basis des Bilds von A.",
+                "Die Spalten von A spannen den Kern von A auf.",
+                "Die Spalten von A sind linear unabhängig."
+            ],
+            correct: 0,
+            explanation: "Das Bild (oder der Spaltenraum) einer Matrix ist exakt als die Menge aller Linearkombinationen ihrer Spalten definiert. Daher spannen die Spalten das Bild auf. Sie bilden jedoch nicht zwingend eine Basis (Option B ist falsch), da sie linear abhängig sein können, wenn die Matrix nicht vollen Spaltenrang hat."
+        },
+        {
+            id: 12,
+            question: "Sei $2A = B \\in \\mathbb{R}^{2\\times 2}$ eine Matrix mit charakteristischem Polynom $p_B(\\lambda) = \\lambda^2 - 12\\lambda + 8$. Welchen Wert hat $\\operatorname{Spur}(A)$?",
+            options: [
+                "-12",
+                "6",
+                "-6",
+                "12"
+            ],
+            correct: 1,
+            explanation: "Aus dem charakteristischen Polynom einer $2\\times 2$-Matrix $\\lambda^2 - \\operatorname{Spur}(B)\\lambda + \\det(B)$ lesen wir direkt ab: $\\operatorname{Spur}(B) = 12$. Da $B = 2A$ ist und die Spur linear ist, gilt $\\operatorname{Spur}(B) = \\operatorname{Spur}(2A) = 2\\operatorname{Spur}(A) = 12$. Daraus folgt $\\operatorname{Spur}(A) = 6$."
+        },
+        {
+            id: 13,
+            question: "Was ist die Determinante $\\det\\begin{pmatrix}1 & a & b+c\\\\ 1 & b & c+a\\\\ 1 & c & a+b\\end{pmatrix}$?",
+            options: [
+                "0",
+                "1",
+                "a + b + c",
+                "$2a^2 - 2c^2 + 2ab - 2bc$"
+            ],
+            correct: 0,
+            explanation: "Addiert man die 2. Spalte zur 3. Spalte, erhält man in der 3. Spalte die Einträge $(a+b+c, a+b+c, a+b+c)^T$. Man kann den Faktor $(a+b+c)$ aus der 3. Spalte herausziehen. Dann besteht die 3. Spalte aus lauter Einsen $(1, 1, 1)^T$. Damit sind die 1. und die 3. Spalte identisch. Eine Matrix mit zwei identischen Spalten hat die Determinante 0."
+        },
+        {
+            id: 14,
+            question: "Welche der folgenden Mengen bildet eine orthonormale Basis von $\\mathbb{R}^3$?",
+            options: [
+                "$\\{ (-1, 1, 0)^T, (1, 1, 0)^T, (0, 0, 1)^T \\}$",
+                "$\\{ \\frac{1}{\\sqrt{2}}(1, -1, 0)^T, \\frac{1}{\\sqrt{2}}(1, 1, 0)^T \\}$",
+                "$\\{ \\frac{1}{\\sqrt{2}}(1, 1, 0)^T, (0, 1, 0)^T, (0, 0, 1)^T \\}$",
+                "Keine der obigen Mengen."
+            ],
+            correct: 3,
+            explanation: "Eine Orthonormalbasis muss 3 Vektoren haben (B fällt weg), die paarweise orthogonal sind und Norm 1 haben. Bei (A) ist die Norm von $(-1,1,0)^T$ gleich $\\sqrt{2}$, nicht 1. Bei (C) ist das Skalarprodukt der ersten beiden Vektoren $\\frac{1}{\\sqrt{2}}(1\\cdot0 + 1\\cdot1 + 0\\cdot0) = \\frac{1}{\\sqrt{2}} \\neq 0$, sie stehen also nicht senkrecht aufeinander. Somit ist keine der Mengen eine ONB."
+        },
+        {
+            id: 15,
+            question: "Welche Dimension hat der Lösungsraum des folgenden Differentialgleichungssystems für $z_1(x)$ und $z_2(x)$?<br>$z_1'' = z_1e^x + z_2'$<br>$z_2''' = z_1' + \\sin(x)z_2$",
+            options: [
+                "2",
+                "4",
+                "5",
+                "6"
+            ],
+            correct: 2,
+            explanation: "Die Dimension des Lösungsraums eines linearen Systems von gewöhnlichen Differentialgleichungen entspricht der Summe der Ordnungen der höchsten Ableitungen der involvierten Funktionen. Für $z_1$ ist die höchste Ableitung $z_1''$ (Ordnung 2). Für $z_2$ ist es $z_2'''$ (Ordnung 3). Die Gesamtdimension ist $2 + 3 = 5$."
+        },
+        {
+            id: 16,
+            question: "Was ist die geometrische Interpretation der linearen Abbildung, die durch die Matrix $A = \\begin{pmatrix}0 & -2\\\\ 2 & 0\\end{pmatrix}$ dargestellt wird?",
+            options: [
+                "Eine Rotation von $\\pi/2$ um den Ursprung gegen den Uhrzeigersinn, bei der die Länge unverändert bleibt.",
+                "Eine Rotation von $\\pi/2$ um den Ursprung gegen den Uhrzeigersinn, bei der sich die Länge verdoppelt.",
+                "Eine Rotation von $\\pi/2$ im Uhrzeigersinn um den Ursprung, bei der sich die Länge verdoppelt.",
+                "Eine Rotation von $\\pi/2$ im Uhrzeigersinn um den Ursprung, bei der die Länge unverändert bleibt."
+            ],
+            correct: 1,
+            explanation: "Man kann die Matrix zerlegen: $A = 2 \\cdot \\begin{pmatrix}0 & -1\\\\ 1 & 0\\end{pmatrix}$. Die Matrix $\\begin{pmatrix}\\cos(\\pi/2) & -\\sin(\\pi/2)\\\\ \\sin(\\pi/2) & \\cos(\\pi/2)\\end{pmatrix}$ ist genau die Standardrotationsmatrix für $\\pi/2$ (90 Grad) gegen den Uhrzeigersinn. Der Skalar 2 verdoppelt zusätzlich die Länge jedes Vektors."
+        },
+        {
+            id: 17,
+            question: "Wenn für eine Matrix P gilt, dass $P = P^2$, dann gilt für jeden Eigenwert $\\lambda$ von P:",
+            options: [
+                "$\\lambda \\in \\mathbb{R}, \\lambda \\le 0$",
+                "$\\lambda \\in \\mathbb{C}$, mit $|\\lambda| = 1$",
+                "$\\lambda \\in (0, 1)$",
+                "$\\lambda = 1 \\text{ oder } \\lambda = 0$"
+            ],
+            correct: 3,
+            explanation: "Sei v ein Eigenvektor zum Eigenwert $\\lambda$. Dann ist $Pv = \\lambda v$. Wenden wir P nochmal an: $P^2v = P(\\lambda v) = \\lambda (Pv) = \\lambda^2 v$. Da $P^2 = P$, muss $\\lambda^2 v = \\lambda v$ gelten. Weil $v \\neq 0$, folgt $\\lambda^2 = \\lambda$, was die einzige Lösung $\\lambda = 0$ oder $\\lambda = 1$ hat. Solche Matrizen nennt man Projektionsmatrizen."
+        },
+        {
+            id: 18,
+            question: "Die quadratische Form $Q(x_1, x_2, x_3) = 3x_1^2 + 2x_2^2 - 2x_1x_2$ ist:",
+            options: [
+                "positiv definit",
+                "negativ definit",
+                "indefinit",
+                "positiv semidefinit"
+            ],
+            correct: 3,
+            explanation: "Die symmetrische Matrix zur Form ist $A = \\begin{pmatrix}3 & -1 & 0\\\\ -1 & 2 & 0\\\\ 0 & 0 & 0\\end{pmatrix}$. Ihre Hauptminoren sind $\\Delta_1 = 3 > 0$, $\\Delta_2 = 6-1 = 5 > 0$ und $\\Delta_3 = 0$. Da es einen Null-Eigenwert gibt (die dritte Variable kommt nicht vor) und die restlichen Eigenwerte positiv sind, ist die Form positiv semidefinit, aber nicht positiv definit."
+        },
+        {
+            id: 19,
+            question: "Betrachten Sie zwei Matrizen A und B, so dass die Produkte AB und BA beide definiert sind. Wenn nun $A \\in \\mathbb{R}^{m\\times n}$ ist, in welchem Raum befindet sich dann die Matrix B?",
+            options: [
+                "$\\mathbb{R}^{n\\times n}$",
+                "$\\mathbb{R}^{m\\times m}$",
+                "$\\mathbb{R}^{m\\times n}$",
+                "$\\mathbb{R}^{n\\times m}$"
+            ],
+            correct: 3,
+            explanation: "Damit das Produkt $AB$ definiert ist, muss die Zeilenanzahl von B gleich der Spaltenanzahl n von A sein ($B$ hat n Zeilen). Damit das Produkt $BA$ definiert ist, muss die Spaltenanzahl von B gleich der Zeilenanzahl m von A sein ($B$ hat m Spalten). Somit ist $B$ eine $n \\times m$-Matrix."
+        },
+        {
+            id: 20,
+            question: "Sei $A \\in \\mathbb{R}^{3\\times 3}$ eine Matrix mit komplexen Eigenwerten $a + ib, a - ib$ (mit $b \\neq 0$) und einem reellen Eigenwert $\\lambda$. Welche Bedingung impliziert $\\det(A) > 0$?",
+            options: [
+                "a > 0",
+                "b > 0",
+                "$\\lambda > 0$",
+                "Die obigen Informationen reichen nicht aus."
+            ],
+            correct: 2,
+            explanation: "Die Determinante einer Matrix ist das Produkt ihrer Eigenwerte. Also $\\det(A) = (a+ib)(a-ib)\\lambda$. Das Produkt der beiden konjugiert komplexen Eigenwerte ist $a^2 + b^2$. Da $b \\neq 0$ ist, ist $a^2 + b^2$ immer strikt positiv. Somit hängt das Vorzeichen der Determinante ausschliesslich vom Vorzeichen des reellen Eigenwerts $\\lambda$ ab. $\\det(A) > 0$ gilt folglich genau dann, wenn $\\lambda > 0$."
+        }
+    ];
+
+    let totalQuestions = quizQuestions.length;
+    let checkedCount = 0;
+    let correctCount = 0;
+
+    const container = document.getElementById('quiz-container');
+
+    document.getElementById('checked-counter').innerText = `0 von ${totalQuestions} Fragen gelöst`;
+
+    quizQuestions.forEach((q, index) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `card-${q.id}`;
+
+        let optionsHtml = '';
+        q.options.forEach((opt, optIndex) => {
+            optionsHtml += `
+                <li>
+                    <label id="label-${q.id}-${optIndex}">
+                        <input type="radio" name="q${q.id}" value="${optIndex}">
+                        <span>${opt}</span>
+                    </label>
+                </li>
+            `;
+        });
+
+        card.innerHTML = `
+            <div class="question-header">Aufgabe ${index + 1}</div>
+            <div class="question-text">${q.question}</div>
+            <ul class="options-list">
+                ${optionsHtml}
+            </ul>
+            <button type="button" class="btn-check" id="btn-${q.id}" onclick="validateQuestion(${q.id})">Frage prüfen</button>
+            <div class="explanation-box" id="expl-${q.id}">
+                <div class="explanation-title">Erklärung:</div>
+                <div id="expl-text-${q.id}">${q.explanation}</div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    function validateQuestion(qId) {
+        const selectedRadio = document.querySelector(`input[name="q${qId}"]:checked`);
+        
+        if (!selectedRadio) {
+            alert("Bitte wähle zuerst eine Antwort aus!");
+            return;
+        }
+
+        const checkedBtn = document.getElementById(`btn-${qId}`);
+        checkedBtn.disabled = true;
+        checkedBtn.innerText = "Überprüft";
+
+        const radios = document.querySelectorAll(`input[name="q${qId}"]`);
+        radios.forEach(r => r.disabled = true);
+
+        const qData = quizQuestions.find(q => q.id === qId);
+        const selectedValue = parseInt(selectedRadio.value);
+        const correctValue = qData.correct;
+
+        if (selectedValue === correctValue) {
+            document.getElementById(`label-${qId}-${selectedValue}`).classList.add('correct-answer');
+            correctCount++;
+        } else {
+            document.getElementById(`label-${qId}-${selectedValue}`).classList.add('wrong-answer');
+            document.getElementById(`label-${qId}-${correctValue}`).classList.add('correct-answer');
+        }
+
+        document.getElementById(`expl-${qId}`).style.display = 'block';
+
+        checkedCount++;
+        updateGlobalProgress();
+        
+        if (window.MathJax) {
+            MathJax.typesetPromise([document.getElementById(`expl-${qId}`)]);
+        }
+    }
+
+    function updateGlobalProgress() {
+        const percent = (checkedCount / totalQuestions) * 100;
+        document.getElementById('global-progress').style.width = `${percent}%`;
+        document.getElementById('checked-counter').innerText = `${checkedCount} von ${totalQuestions} Fragen gelöst`;
+        
+        const successPercent = checkedCount > 0 ? Math.round((correctCount / checkedCount) * 100) : 0;
+        document.getElementById('correct-counter').innerText = `Richtig: ${correctCount} (${successPercent}%)`;
+    }
+</script>
+
+</body>
+</html>
