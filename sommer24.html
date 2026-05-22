@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinAlg Prüfung - Sommer 2024</title>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --success-bg: #e8f8f0;
+            --error-color: #e74c3c;
+            --error-bg: #fdedec;
+            --background-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 18px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            margin-bottom: 25px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .btn-back:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(-3px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background-color: var(--background-color);
+            padding: 10px 0 20px 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .progress-container {
+            background-color: #dcdde1;
+            border-radius: 10px;
+            height: 18px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            background-color: var(--success-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+
+        .question-header {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #34495e;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f1f2f6;
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+        }
+
+        .options-list {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .options-list li {
+            margin-bottom: 12px;
+        }
+
+        .options-list label {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .options-list label:hover {
+            background-color: #f1f2f6;
+            border-color: #b2bec3;
+        }
+
+        .options-list input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .correct-answer {
+            background-color: var(--success-bg) !important;
+            border-color: var(--success-color) !important;
+            color: #1e7e34 !important;
+            font-weight: 600;
+        }
+
+        .wrong-answer {
+            background-color: var(--error-bg) !important;
+            border-color: var(--error-color) !important;
+            color: #bd2130 !important;
+            font-weight: 600;
+        }
+
+        .btn-check {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-check:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-check:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .explanation-box {
+            display: none;
+            margin-top: 20px;
+            padding: 15px 20px;
+            background-color: #eaf2f8;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 4px;
+            font-size: 0.98rem;
+        }
+
+        .explanation-title {
+            font-weight: 700;
+            color: #2980b9;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <a href="index.html" class="btn-back">
+        ⬅ Zurück zur Startseite
+    </a>
+
+    <h1>Lineare Algebra I/II</h1>
+    <div class="subtitle">Prüfung Sommer 2024 - Multiple Choice</div>
+    
+    <div class="sticky-header">
+        <div class="progress-container">
+            <div class="progress-bar" id="global-progress"></div>
+        </div>
+        <div class="progress-text">
+            <span id="checked-counter">0 von 25 Fragen gelöst</span>
+            <span id="correct-counter" style="color: var(--success-color);">Richtig: 0 (0%)</span>
+        </div>
+    </div>
+
+    <div id="quiz-container"></div>
+</div>
+
+<script>
+    const quizQuestions = [
+        {
+            id: 1,
+            question: "Welche der folgenden Matrizen ist die Inverse von $A = 3 \\begin{pmatrix}1 & 2 & 0\\\\ 1 & 1 & 1\\\\ 2 & 0 & 3\\end{pmatrix} \\in \\mathbb{R}^{3\\times3}$?",
+            options: [
+                "$\\begin{pmatrix}1/3 & -2/3 & 2/9\\\\ -1/9 & 1/3 & -1/9\\\\ -2/9 & 4/9 & -1/9\\end{pmatrix}$",
+                "$\\begin{pmatrix}1 & -2 & 2/3\\\\ -1/3 & 0 & 1\\\\ -2 & 2 & -1/3\\end{pmatrix}$",
+                "$\\begin{pmatrix}1 & -2 & 2/3\\\\ -1/3 & 1 & -1/3\\\\ -2/3 & 4/3 & -1/3\\end{pmatrix}$"
+            ],
+            correct: 2,
+            explanation: "Am schnellsten findet man die Lösung durch das Ausschlussverfahren, indem man das Produkt von A mit den vorgeschlagenen Inversen berechnet. Nur bei Option (C) ergibt das Produkt $A \\cdot A^{-1}$ die Einheitsmatrix $I_3$. Alternativ lässt sich das Gauss-Jordan-Verfahren anwenden."
+        },
+        {
+            id: 2,
+            question: "Welche der folgenden Mengen von $\\mathbb{R}^3$ ist <b>kein</b> Untervektorraum?",
+            options: [
+                "$\\{s(1, 0, 0) + t(0, 0, 1) : s, t \\in \\mathbb{R}\\}$",
+                "$\\{(x, y, z) \\in \\mathbb{R}^3 : 3x + 5y + z = 0\\}$",
+                "$\\{(x, y, xy) : x, y \\in \\mathbb{R}\\}$"
+            ],
+            correct: 2,
+            explanation: "Option C ist kein Untervektorraum, da sie nicht bezüglich der Skalarmultiplikation abgeschlossen ist. Der Vektor $(1, 1, 1)^T$ gehört zur Menge (da $x=1, y=1 \\implies xy=1$). Multipliziert man diesen Vektor mit 2, erhält man $(2, 2, 2)^T$. Hier ist aber $xy = 2 \\cdot 2 = 4 \\neq 2$. Somit liegt das Vielfache nicht in der Menge."
+        },
+        {
+            id: 3,
+            question: "Welche Aussage gilt im Allgemeinen?",
+            options: [
+                "Eigenvektoren zu verschiedenen Eigenwerten sind orthogonal zueinander.",
+                "Jede diagonalisierbare Matrix ist invertierbar.",
+                "Die Inverse einer symmetrischen invertierbaren Matrix ist symmetrisch."
+            ],
+            correct: 2,
+            explanation: "Aussage C ist korrekt: Für eine symmetrische Matrix A ($A^T = A$) gilt $(A^{-1})^T = (A^T)^{-1} = A^{-1}$. Somit ist auch ihre Inverse symmetrisch. (A ist nur für symmetrische Matrizen wahr, B ist falsch, da der Eigenwert 0 sein kann)."
+        },
+        {
+            id: 4,
+            question: "Seien $A \\in \\mathbb{R}^{4\\times3}, B \\in \\mathbb{R}^{3\\times3}$. Welcher der folgenden Ausdrücke ist sinnvoll?",
+            options: [
+                "$B^TA$",
+                "$BA^T$",
+                "$A + B$"
+            ],
+            correct: 1,
+            explanation: "Für die Matrixmultiplikation $X \\cdot Y$ muss die Spaltenanzahl von X gleich der Zeilenanzahl von Y sein. B ist $3 \\times 3$. $A^T$ ist eine $3 \\times 4$ Matrix. Das Produkt $B \\cdot A^T$ hat die Dimensionen $(3\\times3) \\cdot (3\\times4)$ und ist somit definiert. Das Ergebnis ist eine $3\\times4$ Matrix."
+        },
+        {
+            id: 5,
+            question: "Für welchen Wert von a besitzt das folgende lineare Gleichungssystem unendlich viele Lösungen?<br>$x + y + z = 5$<br>$x + 2y + z = 9$<br>$x + y + (a^2 - 5)z = a$",
+            options: [
+                "Das lineare Gleichungssystem hat für keinen Wert von a unendlich viele Lösungen.",
+                "$a = \\sqrt{6}$",
+                "$a \\neq \\pm\\sqrt{6}$"
+            ],
+            correct: 0,
+            explanation: "Das System kann nur dann unendlich viele Lösungen haben, wenn die Determinante der Koeffizientenmatrix Null ist. $\\det(A) = a^2 - 6$. Somit muss $a = \\pm\\sqrt{6}$ gelten. Setzt man dies in das System ein, erhält man für die letzte Gleichung $x + y + (6-5)z = \\pm\\sqrt{6}$, also $x + y + z = \\pm\\sqrt{6}$. Aus der ersten Gleichung weiss man aber, dass $x + y + z = 5$. Dies ist ein direkter Widerspruch (inkonsistent). Es gibt also keine Lösung, geschweige denn unendlich viele."
+        },
+        {
+            id: 6,
+            question: "Falls $\\det\\begin{pmatrix}3 & d & a+2d\\\\ 3 & e & b+2e\\\\ 15 & 5f & 5c+10f\\end{pmatrix} = 60$, dann ist $\\det\\begin{pmatrix}a & b & c\\\\ d & e & f\\\\ 1 & 1 & 1\\end{pmatrix} = \\dots$",
+            options: [
+                "-4",
+                "4",
+                "-1"
+            ],
+            correct: 0,
+            explanation: "Umformen der ersten Matrix: Teile die 3. Zeile durch 5 $\\implies \\det$ reduziert sich auf 12. Die Matrix ist nun transponiert zu lesen (Zeilen $\\leftrightarrow$ Spalten). Wir betrachten die Spalten: Spalte 1: $(3, 3, 3)^T$. Teile durch 3 $\\implies \\det$ reduziert sich auf 4. Spalte 2 ist $(d, e, f)^T$. Spalte 3 ist $(a+2d, b+2e, c+2f)^T$. Subtrahiert man das Doppelte der 2. Spalte von der 3. Spalte, bleibt $(a,b,c)^T$. Transponieren ändert die Determinate nicht (immer noch 4). Nun tauschen wir noch die erste (1,1,1) und dritte (a,b,c) Spalte/Zeile, um die Zielmatrix zu erhalten. Ein Tausch dreht das Vorzeichen um. Ergebnis: $-4$."
+        },
+        {
+            id: 7,
+            question: "Sei $A \\in \\mathbb{R}^{4\\times 2}$ und $B \\in \\mathbb{R}^{2\\times 4}$. Welche Aussage ist korrekt?",
+            options: [
+                "Die Dimension des Bildes von AB ist höchstens 2.",
+                "Falls der Kern von BA nur aus dem Nullvektor besteht, so gilt dies auch für den Kern von B.",
+                "Falls A den Rang 2 hat, so hat auch BA den Rang 2."
+            ],
+            correct: 0,
+            explanation: "Es gilt $AB : \\mathbb{R}^4 \\rightarrow \\mathbb{R}^4$. Der Zwischenschritt durch die Matrizen führt über den $\\mathbb{R}^2$ (da B Vektoren in den 2D-Raum projiziert). Die Dimension des Bildes einer Verkettung kann nie grösser sein als der kleinste Rang der Einzelmatrizen. Da B maximal Rang 2 hat, ist das Bild von AB höchstens 2-dimensional."
+        },
+        {
+            id: 8,
+            question: "Gegeben sei die lineare Differentialgleichung $y''' - 2y'' + y' = 0$ ($\\ast$). Welche Dimension hat der Raum $\\{y : y \\text{ löst } (\\ast) \\text{ und } y(0) = 1, y'(0) = 0\\}$?",
+            options: [
+                "0",
+                "1",
+                "2"
+            ],
+            correct: 1,
+            explanation: "Die Differentialgleichung ist 3. Ordnung. Der Raum aller Lösungen der homogenen DGL hat somit Dimension 3. Es werden zwei linear unabhängige Randbedingungen ($y(0)=1$ und $y'(0)=0$) gefordert. Jede Randbedingung reduziert die Dimension des Lösungsraums um 1. Die verbleibende Dimension ist also $3 - 2 = 1$."
+        },
+        {
+            id: 9,
+            question: "Welche Dimension hat der Lösungsraum des folgenden Differentialgleichungssystems?<br>$y_1'' = y_1 + y_3$<br>$y_3'' = y_1$<br>$y_2' = y_1' + y_3'$",
+            options: [
+                "2",
+                "3",
+                "5"
+            ],
+            correct: 2,
+            explanation: "Die Gesamtdimension des Lösungsraums eines Systems aus linearen gewöhnlichen Differentialgleichungen entspricht der Summe der Ordnungen der höchsten Ableitungen der einzelnen Variablen. Für $y_1$ ist die Ordnung 2, für $y_3$ ist sie 2, und für $y_2$ ist sie 1. Summe: $2 + 2 + 1 = 5$."
+        },
+        {
+            id: 10,
+            question: "Betrachten Sie die quadratische Form $q(x_1, x_2) = x_1^2 + x_2^2 + 4x_1x_2$. Der durch $q(x_1, x_2) = 8$ gegebene Kegelschnitt ist...",
+            options: [
+                "eine Ellipse.",
+                "eine Hyperbel.",
+                "eine Parabel."
+            ],
+            correct: 1,
+            explanation: "Die zur quadratischen Form gehörende symmetrische Matrix ist $A = \\begin{pmatrix}1 & 2\\\\ 2 & 1\\end{pmatrix}$. Das charakteristische Polynom ist $(1-\\lambda)^2 - 4 = 0 \\implies 1-\\lambda = \\pm 2$. Die Eigenwerte sind $\\lambda_1 = 3$ und $\\lambda_2 = -1$. Da die Eigenwerte unterschiedliche Vorzeichen haben, beschreibt die Form eine Hyperbel."
+        },
+        {
+            id: 11,
+            question: "Es sei $A = \\begin{pmatrix}3 & 4 & -2\\\\ 0 & -1 & 0\\\\ 0 & 0 & 1/2\\end{pmatrix}$. Was sind die Eigenwerte von $-A^{-1}$?",
+            options: [
+                "-1/3, 1, -2",
+                "1/3, 1, -2",
+                "-1/3, -1, -2"
+            ],
+            correct: 0,
+            explanation: "Da A eine obere Dreiecksmatrix ist, stehen die Eigenwerte direkt auf der Diagonale: $\\lambda_{A} = \\{3, -1, 1/2\\}$. Ist $\\lambda$ ein Eigenwert von A, so ist $-\\frac{1}{\\lambda}$ ein Eigenwert von $-A^{-1}$. Dies ergibt die Werte $-1/3$, $1$ und $-2$."
+        },
+        {
+            id: 12,
+            question: "Sei V der Vektorraum der Polynome vom Grad $\\le 2$. Betrachten Sie $f(p(x)) = p(x) - p'(x) - 2p(0)$. Welche Aussage stimmt?",
+            options: [
+                "f ist keine lineare Abbildung.",
+                "Die Eigenwerte von f sind 1 und -1.",
+                "Die inverse Abbildung von f bildet $x^2$ auf $x^2 + 2x - 1$ ab."
+            ],
+            correct: 1,
+            explanation: "Die Darstellungsmatrix von f bezüglich der Standardbasis $\\{1, x, x^2\\}$ ergibt sich, wenn man f auf die Basis anwendet: $f(1) = 1 - 0 - 2(1) = -1$. $f(x) = x - 1 - 0 = -1 + x$. $f(x^2) = x^2 - 2x - 0 = -2x + x^2$. Die Matrix ist also $\\begin{pmatrix}-1 & -1 & 0\\\\ 0 & 1 & -2\\\\ 0 & 0 & 1\\end{pmatrix}$. Da dies eine obere Dreiecksmatrix ist, stehen die Eigenwerte auf der Diagonale: -1 und 1 (doppelt)."
+        },
+        {
+            id: 13,
+            question: "Sei V der Vektorraum der Polynome vom Grad $\\le 3$. Die lineare Abbildung $f(p) = \\int_{-1}^1 p(x)dx$ hat bezüglich der Basen $\\{1, x, x^2, x^3\\}$ von V und $\\{1\\}$ von $\\mathbb{R}$ welche Darstellungsmatrix?",
+            options: [
+                "$\\begin{pmatrix}2 & 0 & 2/3 & 0\\end{pmatrix}$",
+                "$\\begin{pmatrix}2\\end{pmatrix}$",
+                "$\\begin{pmatrix}2\\\\ 0\\\\ 2/3\\\\ 0\\end{pmatrix}$"
+            ],
+            correct: 0,
+            explanation: "Wende f auf die Basisvektoren an: $f(1) = \\int_{-1}^1 1 dx = 2$. $f(x) = \\int_{-1}^1 x dx = 0$. $f(x^2) = \\int_{-1}^1 x^2 dx = 2/3$. $f(x^3) = \\int_{-1}^1 x^3 dx = 0$. Da die Abbildung von $\\mathbb{R}^4$ nach $\\mathbb{R}^1$ geht, ist die Darstellungsmatrix eine $1\\times4$ Matrix, also ein Zeilenvektor."
+        },
+        {
+            id: 14,
+            question: "Sei $A = \\begin{pmatrix}2 & 2 & 3\\\\ 1 & 2 & 1\\\\ 2 & -2 & 1\\end{pmatrix}$. Welcher der folgenden Vektoren ist ein Eigenvektor der Matrix A?",
+            options: [
+                "$(-2, 1, 2)^T$",
+                "$(2, 5, 1)^T$",
+                "$(-1, 0, 1)^T$"
+            ],
+            correct: 2,
+            explanation: "Durch einfaches Einsetzen und Matrixmultiplikation: $A \\cdot (-1, 0, 1)^T = (-2+0+3, -1+0+1, -2+0+1)^T = (1, 0, -1)^T = -1 \\cdot (-1, 0, 1)^T$. Der Vektor wird also genau auf sein Negatives abgebildet, ist folglich ein Eigenvektor zum Eigenwert $\\lambda = -1$."
+        },
+        {
+            id: 15,
+            question: "Sei $f : \\mathbb{R}^n \\rightarrow \\mathbb{R}^m$ eine lineare Abbildung mit Darstellungsmatrix A. Welche Aussage ist <b>nicht korrekt</b>?",
+            options: [
+                "Falls der Kern von f nur aus dem Nullvektor besteht, so ist $m \\ge n$.",
+                "Falls $m < n$, dann ist $\\operatorname{im}(f) = \\mathbb{R}^m$.",
+                "Falls $\\operatorname{rank}(A) = n$, dann sind die Spalten von A linear unabhängig."
+            ],
+            correct: 1,
+            explanation: "Nur weil die Zieldimension kleiner ist ($m < n$), heisst das nicht automatisch, dass die Abbildung surjektiv ist (also den kompletten $\\mathbb{R}^m$ ausfüllt). Ein simples Gegenbeispiel ist die Nullabbildung $f(x) = 0$. Hier ist das Bild nur der Nullvektor und nicht der gesamte Raum $\\mathbb{R}^m$."
+        },
+        {
+            id: 16,
+            question: "Seien A, B invertierbare $2\\times 2$ Matrizen mit $\\det A = 27$ und $B^3 = A^T$. Dann ist die Determinante von $2B^{-1}AB^TA^{-1}B$ gleich...",
+            options: [
+                "12",
+                "3",
+                "273"
+            ],
+            correct: 0,
+            explanation: "Es gilt $\\det(B^3) = \\det(B)^3 = \\det(A^T) = 27 \\implies \\det(B) = 3$. Das gesuchte Produkt enthält den Faktor 2 für eine $2\\times 2$ Matrix, wodurch sich der Skalar als $2^2 = 4$ auswirkt. Die Matrix-Determinanten vereinfachen sich: $\\det(B^{-1})\\det(A)\\det(B^T)\\det(A^{-1})\\det(B) = \\frac{1}{\\det(B)} \\cdot \\det(A) \\cdot \\det(B) \\cdot \\frac{1}{\\det(A)} \\cdot \\det(B) = \\det(B)$. Insgesamt also $4 \\cdot \\det(B) = 4 \\cdot 3 = 12$."
+        },
+        {
+            id: 17,
+            question: "Seien A, B $\\in \\mathbb{R}^{2\\times2}$ diagonalisierbare Matrizen mit den Eigenwerten 1 und 2. Welche Aussage ist dann im Allgemeinen <b>falsch</b>?",
+            options: [
+                "Es existiert eine Matrix $T \\in \\mathbb{R}^{2\\times2}$ mit $T B T^{-1} = A$.",
+                "Es gilt $AB = BA$.",
+                "Es gilt $\\operatorname{Spur}(A - B) = 0$."
+            ],
+            correct: 1,
+            explanation: "Matrizen, die dieselben Eigenwerte besitzen, sind zwar ähnlich zueinander (Aussage A stimmt), aber sie kommutieren im Allgemeinen nicht ($AB \\neq BA$), sofern sie nicht exakt denselben Basis-Satz an Eigenvektoren teilen (gemeinsame Diagonalisierbarkeit)."
+        },
+        {
+            id: 18,
+            question: "Sei A eine $4\\times 5$ Matrix mit den Spalten $v_1, \\dots, v_5$. Es gelte $v_2 = v_1 + v_3$ und $2v_4 = v_1 - v_2$. Dann gilt...",
+            options: [
+                "$\\operatorname{rank}(A) \\le 3$ und $\\dim(\\ker A) \\ge 2$.",
+                "$\\operatorname{rank}(A) \\ge 2$ und $\\dim(\\ker A) \\le 3$.",
+                "$\\operatorname{rank}(A) \\ge 3$ und $\\dim(\\ker A) \\le 2$."
+            ],
+            correct: 0,
+            explanation: "Es liegen 5 Spaltenvektoren vor. Die beiden Gleichungen sind zwei eindeutige lineare Abhängigkeiten. Das bedeutet, der aufgespannte Spaltenraum (Bild) kann höchstens Dimension $5 - 2 = 3$ haben ($\\operatorname{rank}(A) \\le 3$). Gemäss Rangsatz ($\\operatorname{rank} + \\ker = 5$) muss die Dimension des Kerns dann zwingend $\\ge 2$ sein."
+        },
+        {
+            id: 19,
+            question: "Seien $v_1 = (2, 1, 5)^T$ und $v_2 = (3, -1, 4)^T$. Wie lauten die Koordinaten von $v = (1, 3, 6)^T$ bezüglich der Basis $\\{v_1, v_2\\}$?",
+            options: [
+                "$(3, 1)^T$",
+                "$(2, -1)^T$",
+                "v wird nicht von $v_1$ und $v_2$ aufgespannt."
+            ],
+            correct: 1,
+            explanation: "Wir prüfen durch Einsetzen der Koordinaten aus (B): $2 \\cdot v_1 - 1 \\cdot v_2 = 2(2, 1, 5)^T - 1(3, -1, 4)^T = (4-3, 2-(-1), 10-4)^T = (1, 3, 6)^T$. Dies entspricht exakt dem Vektor $v$. Die Koordinaten sind also $(2, -1)^T$."
+        },
+        {
+            id: 20,
+            question: "Sei $A \\in \\mathbb{R}^{2\\times 2}$ mit reellen Eigenwerten $\\lambda_1 \\neq \\lambda_2$. Welche Aussage gilt im Allgemeinen?",
+            options: [
+                "A ist diagonalisierbar.",
+                "A ist symmetrisch.",
+                "A ist invertierbar."
+            ],
+            correct: 0,
+            explanation: "Eine $n\\times n$ Matrix, die n paarweise verschiedene reelle Eigenwerte besitzt, ist immer über $\\mathbb{R}$ diagonalisierbar. Die Eigenvektoren zu verschiedenen Eigenwerten sind stets linear unabhängig und bilden somit eine Basis des Raumes."
+        },
+        {
+            id: 21,
+            question: "Welche der folgenden Aussagen gilt im Allgemeinen für eine diagonalisierbare Matrix $A \\in \\mathbb{R}^{n\\times n}$?",
+            options: [
+                "Alle Eigenräume von A sind 1-dimensional.",
+                "A hat n verschiedene Eigenwerte.",
+                "Es existiert eine Basis für $\\mathbb{R}^n$, die aus Eigenvektoren von A besteht."
+            ],
+            correct: 2,
+            explanation: "Dies ist exakt die Definition der Diagonalisierbarkeit: Eine Matrix A ist genau dann diagonalisierbar, wenn der Vektorraum eine Basis besitzt, die ausschliesslich aus Eigenvektoren von A besteht."
+        },
+        {
+            id: 22,
+            question: "Welcher der folgenden Ausdrücke definiert <b>kein</b> Skalarprodukt auf dem Vektorraum $P_2$ der reellen Polynome von Grad $\\le 2$?",
+            options: [
+                "$\\langle p, q\\rangle = p(1)q(1) + p(2)q(2) + p(3)q(3)$",
+                "$\\langle p, q\\rangle = p(0)q(0) + p(1)q(1)$",
+                "$\\langle p, q\\rangle = \\int_{-2}^0 p(x)q(x)dx + \\int_1^3 p(x)q(x)dx$"
+            ],
+            correct: 1,
+            explanation: "Um auf dem Raum $P_2$ (Polynome bis Grad 2) positiv definit zu sein, muss das Punkt-Skalarprodukt an mindestens 3 verschiedenen Punkten ausgewertet werden. Bei Option (B) sind es nur 2 Punkte. Wählt man das Polynom $p(x) = x(x-1)$, so ist $p(0)=0$ und $p(1)=0$. Damit ist $\\langle p, p\\rangle = 0$, obwohl $p$ nicht das Nullpolynom ist. Die positive Definitheit ist verletzt."
+        },
+        {
+            id: 23,
+            question: "Sei $P_1$ mit $\\langle p, q\\rangle = \\int_{-1}^1 p(x)q(x)dx$ gegeben. Die Orthogonalprojektion von $x$ auf den Vektor $1$ ist...",
+            options: [
+                "1/2",
+                "x",
+                "0"
+            ],
+            correct: 2,
+            explanation: "Wir berechnen das Skalarprodukt der beiden Vektoren: $\\langle x, 1\\rangle = \\int_{-1}^1 x \\cdot 1 dx = [\\frac{1}{2}x^2]_{-1}^1 = \\frac{1}{2} - \\frac{1}{2} = 0$. Da ihr Skalarprodukt Null ist, stehen die Funktionen bereits senkrecht (orthogonal) aufeinander. Die Projektion von $x$ auf $1$ ist folglich $0$."
+        },
+        {
+            id: 24,
+            question: "Sei $A \\in \\mathbb{R}^{3\\times2}$ mit $A(1, 0)^T = (0, 2, 1)^T$ und $A(2, 3)^T = (-1, 0, 1)^T$. Dann ist $A(5, 6)^T = \\dots$",
+            options: [
+                "$(-1, 2, 2)^T$",
+                "$(-2, 2, 3)^T$",
+                "Diese Informationen genügen nicht zur Berechnung."
+            ],
+            correct: 1,
+            explanation: "Wir können den Zielvektor als Linearkombination darstellen: $(5, 6)^T = 1 \\cdot (1, 0)^T + 2 \\cdot (2, 3)^T$. Wegen der Linearität der Matrixmultiplikation gilt $A(5,6)^T = 1 \\cdot A(1,0)^T + 2 \\cdot A(2,3)^T$. Das ergibt $(0, 2, 1)^T + 2 \\cdot (-1, 0, 1)^T = (-2, 2, 3)^T$."
+        },
+        {
+            id: 25,
+            question: "Seien $v_1, v_2, v_3 \\in \\mathbb{R}^n$. Welche Aussage ist im Allgemeinen wahr?",
+            options: [
+                "Wenn $v_1 \\perp v_2$ und $v_1 \\perp v_3$, dann ist $v_1 \\perp (v_2 - v_3)$.",
+                "Wenn $v_1 \\perp v_2$, dann ist $v_1 \\perp (v_1 - v_2)$.",
+                "Wenn $v_1 \\perp (v_2 + v_3)$, dann ist $v_1 \\perp (v_2 - v_3)$."
+            ],
+            correct: 0,
+            explanation: "Aussage A folgt direkt aus der Linearität des Skalarprodukts: $\\langle v_1, v_2 - v_3\\rangle = \\langle v_1, v_2\\rangle - \\langle v_1, v_3\\rangle = 0 - 0 = 0$. Die Vektoren stehen somit senkrecht aufeinander."
+        }
+    ];
+
+    let totalQuestions = quizQuestions.length;
+    let checkedCount = 0;
+    let correctCount = 0;
+
+    const container = document.getElementById('quiz-container');
+
+    document.getElementById('checked-counter').innerText = `0 von ${totalQuestions} Fragen gelöst`;
+
+    quizQuestions.forEach((q, index) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `card-${q.id}`;
+
+        let optionsHtml = '';
+        q.options.forEach((opt, optIndex) => {
+            optionsHtml += `
+                <li>
+                    <label id="label-${q.id}-${optIndex}">
+                        <input type="radio" name="q${q.id}" value="${optIndex}">
+                        <span>${opt}</span>
+                    </label>
+                </li>
+            `;
+        });
+
+        card.innerHTML = `
+            <div class="question-header">Aufgabe ${index + 1}</div>
+            <div class="question-text">${q.question}</div>
+            <ul class="options-list">
+                ${optionsHtml}
+            </ul>
+            <button type="button" class="btn-check" id="btn-${q.id}" onclick="validateQuestion(${q.id})">Frage prüfen</button>
+            <div class="explanation-box" id="expl-${q.id}">
+                <div class="explanation-title">Erklärung:</div>
+                <div id="expl-text-${q.id}">${q.explanation}</div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    function validateQuestion(qId) {
+        const selectedRadio = document.querySelector(`input[name="q${qId}"]:checked`);
+        
+        if (!selectedRadio) {
+            alert("Bitte wähle zuerst eine Antwort aus!");
+            return;
+        }
+
+        const checkedBtn = document.getElementById(`btn-${qId}`);
+        checkedBtn.disabled = true;
+        checkedBtn.innerText = "Überprüft";
+
+        const radios = document.querySelectorAll(`input[name="q${qId}"]`);
+        radios.forEach(r => r.disabled = true);
+
+        const qData = quizQuestions.find(q => q.id === qId);
+        const selectedValue = parseInt(selectedRadio.value);
+        const correctValue = qData.correct;
+
+        if (selectedValue === correctValue) {
+            document.getElementById(`label-${qId}-${selectedValue}`).classList.add('correct-answer');
+            correctCount++;
+        } else {
+            document.getElementById(`label-${qId}-${selectedValue}`).classList.add('wrong-answer');
+            document.getElementById(`label-${qId}-${correctValue}`).classList.add('correct-answer');
+        }
+
+        document.getElementById(`expl-${qId}`).style.display = 'block';
+
+        checkedCount++;
+        updateGlobalProgress();
+        
+        if (window.MathJax) {
+            MathJax.typesetPromise([document.getElementById(`expl-${qId}`)]);
+        }
+    }
+
+    function updateGlobalProgress() {
+        const percent = (checkedCount / totalQuestions) * 100;
+        document.getElementById('global-progress').style.width = `${percent}%`;
+        document.getElementById('checked-counter').innerText = `${checkedCount} von ${totalQuestions} Fragen gelöst`;
+        
+        const successPercent = checkedCount > 0 ? Math.round((correctCount / checkedCount) * 100) : 0;
+        document.getElementById('correct-counter').innerText = `Richtig: ${correctCount} (${successPercent}%)`;
+    }
+</script>
+
+</body>
+</html>
